@@ -17,15 +17,15 @@
                     </v-card-title>
                     <v-card-text>
                         <v-flex class="topInfo">
-                            <v-select label="执行标准快捷输入" :items="executes" item-text="shortNote" item-value="shortNote" @change="chooseExecute" v-model="chooseExecuteData"></v-select>
+                            <v-select label="执行标准快捷输入" :items="executes" item-text="shortNote" item-value="shortNote" multiple  @change="chooseExecute" v-model="chooseExecuteData"></v-select>
                         </v-flex>
                         <v-textarea outline name="input-7-4" label="执行标准" v-model="projects.project_execute_standard" :rules="noteRules"></v-textarea>
                         <v-flex class="centerInfo">
-                            <v-select  label="作业内容快捷输入" :items="worknotes" item-text="shortNote" item-value="shortNote" @change="chooseNote" v-model="chooseNoteData"></v-select>
+                            <v-select  label="作业内容快捷输入" :items="worknotes" item-text="shortNote" item-value="shortNote" multiple  @change="chooseNote" v-model="chooseNoteData"></v-select>
                         </v-flex>
                         <v-textarea outline name="input-7-4" label="作业内容" v-model="projects.project_work_note" :rules="noteRules"></v-textarea>
                         <v-flex class="bottomInfo">
-                            <v-select  label="技术要求快捷输入" :items="requires" item-text="shortNote" item-value="shortNote" @change="chooseRequire" v-model="chooseRequiresData"></v-select>
+                            <v-select  label="技术要求快捷输入" :items="requires" item-text="shortNote" item-value="shortNote" multiple @change="chooseRequire" v-model="chooseRequiresData"></v-select>
                         </v-flex>
                         <v-textarea outline name="input-7-4" label="技术要求" v-model="projects.project_work_require" :rules="noteRules"></v-textarea>
                         <v-flex>
@@ -586,22 +586,25 @@
 
             },
             chooseExecute(){
-                if(this.projects.project_execute_standard == null){
-                    this.projects.project_execute_standard = ''
+                this.projects.project_execute_standard = ''
+
+                for(var data of this.chooseExecuteData){
+                    this.projects.project_execute_standard += data + ';'
                 }
-                this.projects.project_execute_standard += this.chooseExecuteData + ';'
+
             },
             chooseNote(){
-                if(this.projects.project_work_note == null){
-                    this.projects.project_work_note = ''
+                this.projects.project_work_note = ''
+                for(var data of this.chooseNoteData) {
+                    this.projects.project_work_note += data + ';'
                 }
-                this.projects.project_work_note += this.chooseNoteData + ';'
+
             },
             chooseRequire(){
-                if(this.projects.project_work_require == null){
-                    this.projects.project_work_require = ''
+                this.projects.project_work_require = ''
+                for(var data of this.chooseRequiresData){
+                    this.projects.project_work_require += data + ';'
                 }
-                this.projects.project_work_require += this.chooseRequiresData + ';'
             },
             addRate(item){
                 item.output = item.rate / 100 * this.project_output
