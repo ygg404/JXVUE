@@ -108,39 +108,134 @@
             <v-btn color="success" @click="clickPutToWork">提交到作业</v-btn>
         </v-layout>
 
-        <v-dialog max-width="800px" v-model="chooseGroupDialog" persistent>
-            <v-card>
-                <v-card-title><span class="title">选择作业组</span></v-card-title>
-                <v-card-text>
-                    <v-container>
-                        <v-layout wrap>
-                            <v-flex v-for="group in groups" :key="group.id" >
-                                <v-form align-center>
-                                    <v-layout>
-                                        <v-flex xs3>
-                                            <v-checkbox :label="group.gName" class="shrink mr-2" v-model="group.choosedItem" ></v-checkbox>
-                                        </v-flex>
-                                        <v-flex xs4>
-                                            <v-text-field  label="占比" type="number" :rules="noteRules" :disabled="!group.choosedItem" v-model="group.rate" @change="addRate(group)"></v-text-field>
-                                        </v-flex>
-                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                        <v-flex xs4>
-                                            <v-text-field  label="产值" type="number" :rules="noteRules" :disabled="!group.choosedItem" v-model="group.output"  @change="addOutPut(group)"></v-text-field>
-                                        </v-flex>
-                                        <v-flex xs3 class="shortDate">
-                                            <v-text-field  label="最短工期" type="number" :rules="noteRules" :disabled="!group.choosedItem" v-model="group.shortDate"></v-text-field>
-                                        </v-flex>
-                                        <v-flex xs3 class="shortDate">
-                                            <v-text-field  label="最迟工期" type="number" :rules="noteRules" :disabled="!group.choosedItem" v-model="group.lastDate"></v-text-field>
-                                        </v-flex>
-                                    </v-layout>
-                                </v-form>
-                            </v-flex>
-                            <v-select v-model="projects.project_charge" :items="chooseCharge" label="项目负责人" item-value="headMan" item-text="headMan"  single-line></v-select>
-                        </v-layout>
-                    </v-container>
+        <!--<v-dialog max-width="800px" v-model="chooseGroupDialog" persistent>-->
+            <!--<v-card>-->
+                <!--<v-card-title><span class="title">选择作业组</span></v-card-title>-->
+                <!--<v-card-text>-->
+                    <!--<v-container>-->
+                        <!--<v-layout wrap>-->
+                            <!--<v-flex v-for="group in groups" :key="group.id" >-->
+                                <!--<v-form align-center>-->
+                                    <!--<v-layout>-->
+                                        <!--<v-flex xs3>-->
+                                            <!--<v-checkbox :label="group.gName" class="shrink mr-2" v-model="group.choosedItem" ></v-checkbox>-->
+                                        <!--</v-flex>-->
+                                        <!--<v-flex xs4>-->
+                                            <!--<v-text-field  label="占比" type="number" :rules="noteRules" :disabled="!group.choosedItem" v-model="group.rate" @change="addRate(group)"></v-text-field>-->
+                                        <!--</v-flex>-->
+                                        <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
+                                        <!--<v-flex xs4>-->
+                                            <!--<v-text-field  label="产值" type="number" :rules="noteRules" :disabled="!group.choosedItem" v-model="group.output"  @change="addOutPut(group)"></v-text-field>-->
+                                        <!--</v-flex>-->
+                                        <!--<v-flex xs3 class="shortDate">-->
+                                            <!--<v-text-field  label="最短工期" type="number" :rules="noteRules" :disabled="!group.choosedItem" v-model="group.shortDate"></v-text-field>-->
+                                        <!--</v-flex>-->
+                                        <!--<v-flex xs3 class="shortDate">-->
+                                            <!--<v-text-field  label="最迟工期" type="number" :rules="noteRules" :disabled="!group.choosedItem" v-model="group.lastDate"></v-text-field>-->
+                                        <!--</v-flex>-->
+                                    <!--</v-layout>-->
+                                <!--</v-form>-->
+                            <!--</v-flex>-->
+                            <!--<v-select v-model="projects.project_charge" :items="chooseCharge" label="项目负责人" item-value="headMan" item-text="headMan"  single-line></v-select>-->
+                        <!--</v-layout>-->
+                    <!--</v-container>-->
 
-                </v-card-text>
+                <!--</v-card-text>-->
+                <!--<v-card-actions>-->
+                    <!--<v-spacer></v-spacer>-->
+                    <!--<v-btn color="blue darken-1" flat @click="chooseGroupDialog = false">取消</v-btn>-->
+                    <!--<v-btn color="info" @click="chooseGroupRate(groups)">确定</v-btn>-->
+                <!--</v-card-actions>-->
+            <!--</v-card>-->
+        <!--</v-dialog>-->
+
+        <v-dialog width="90%" v-model="chooseGroupDialog" persistent>
+            <v-card>
+                <v-card-title><span class="title">产值预算</span></v-card-title>
+                <div class="content-container">
+                    <div class="left-data">
+                        <div v-for="(types, index) in leftData" >
+                            <el-checkbox
+                            :key="index"
+                            :label="types.typeName"
+                            v-show="types.listIndex === lefeIndex"
+                            v-model="types.check"
+                            size="medium"
+                            @change="checked=>allOutput()"
+                            ></el-checkbox>
+                        </div>
+                            <!--<el-checkbox-->
+                                    <!--v-for="(types, index) in leftData"-->
+                                    <!--:key="index"-->
+                                    <!--:label="types.typeName"-->
+                                    <!--v-show="types.listIndex === lefeIndex"-->
+                                    <!--v-model="types.check"-->
+                                    <!--size="medium"-->
+                                    <!--:change="allOutput"-->
+                            <!--&gt;</el-checkbox>-->
+
+
+                    </div>
+
+                    <div class="right-data">
+                    <v-radio-group v-model="lefeIndex">
+                        <div v-for="(list, listIndex) in outputList" :key="listIndex" style="max-width: 700px;">
+                            <v-card class="chooseCard" :class="{'not-margin-top': listIndex === 0}">
+                                <v-radio :label="list.gName" :value="listIndex" ></v-radio>
+                                <v-data-table :headers="dialogHeaders"  hide-actions :items="list.outPutWraps" >
+                                    <template slot="items" slot-scope="props" v-if="props.item.check">
+                                        <td>{{props.item.typeName}}</td>
+                                        <td>{{props.item.typeUnit}}</td>
+                                        <td>{{props.item.typeOutput}}</td>
+                                        <td>
+                                            <v-flex xs10>
+                                                <v-text-field
+                                                        v-model="props.item.projectRatio"
+                                                        @input="addRatio(props.item)"
+                                                        type="number"
+                                                ></v-text-field>
+                                            </v-flex>
+                                        </td>
+                                        <td>
+                                            <v-flex xs10>
+                                                <v-text-field
+                                                        v-model="props.item.workLoad"
+                                                        @input="addRatio(props.item)"
+                                                        type="number"
+                                                ></v-text-field>
+                                            </v-flex>
+                                        </td>
+                                        <td>{{props.item.typeOut}}</td>
+                                    </template>
+                                </v-data-table>
+                                <div class="content-container" style="margin-top: 15px">
+                                    <strong class="bottom-data">预算产值：<strong style="color: red">{{list.groupOutput}}</strong> </strong>
+                                    <strong class="bottom-data">占比：<strong style="color: red">{{list.groupOutputRate}}</strong>%</strong>
+                                    <strong class="bottom-data">最短工期：<strong style="color: red">{{list.groupShortDate}}</strong></strong>
+                                    <strong class="bottom-data">最迟工期：<strong style="color: red">{{list.groupLastDate}}</strong></strong>
+                                </div>
+                            </v-card>
+
+                         </div>
+                    </v-radio-group>
+                    </div>
+                    <div class="detail-data">
+                        <v-card-text>
+                            <strong>项目负责人:</strong>
+                            <v-select v-model="projects.project_charge" :items="chooseChargeList" label="项目负责人" item-value="headMan" item-text="headMan"  single-line></v-select>
+                        </v-card-text>
+                        <v-card-text>
+                            <div><strong>项目总预算产值：<strong style="color: red">{{allOutPut}}</strong></strong></div>
+                            <el-table :data="tableData" style="width: 100%" show-summary >
+                                <el-table-column prop="gName" label="队名"></el-table-column>
+                                <el-table-column prop="groupOutput" label="预算产值"></el-table-column>
+                                <el-table-column prop="groupOutputRate" label="占比"></el-table-column>
+                                <el-table-column prop="groupShortDate" label="最短工期"></el-table-column>
+                                <el-table-column prop="groupLastDate" label="最迟工期"></el-table-column>
+                            </el-table>
+                        </v-card-text>
+                    </div>
+                </div>
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="blue darken-1" flat @click="chooseGroupDialog = false">取消</v-btn>
@@ -149,10 +244,12 @@
             </v-card>
         </v-dialog>
 
+
         <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="snackbarTimeout" top>
             {{snackbarText}}
         </v-snackbar>
     </v-container>
+
 </template>
 
 <script>
@@ -204,6 +301,14 @@
                 {text:'最短工期',sortable:false},
                 {text:'最长工期',sortable:false}
             ],
+            dialogHeaders: [
+                { text: "作业类型", sortable: false },
+                { text: "工作量单位", sortable: false },
+                { text: "单位产值", sortable: false },
+                { text: "难度系数", sortable: false },
+                { text: "工作量", sortable: false },
+                { text: "产值", sortable: false }
+            ],
             projects:{
                 project_id:'',
                 project_execute_standard:'',
@@ -223,9 +328,48 @@
                 chooseGroups:[],
                 groupId:''
             },
+            //项目产值
+            groupOutPutList: [],
+            projectOutPut: 0,
+            output: {
+                projectName: "",
+                projectType: "",
+                projectAuthorize: "",
+                projectNote: "",
+                projectUserName: "",
+                projectPhone: "",
+                projectCharge: "",
+                projectSetup: "",
+                projectWriter: "",
+                projectBusiness: "",
+                projectProduce: "",
+                projectStartTime: "",
+                projectEndTime: "",
+                projectStage: "",
+                projectExe: "",
+                projectWorkNote: "",
+                projectWorkRequire: "",
+                disclosureNote: "",
+                checkSuggestion: "",
+                dataName: "",
+                briefSummary: "",
+                workLoad: "",
+                projectLoad:"",
+                qualityNote: "",
+                qualitySuggestion: "",
+                qualityScore: "",
+                qualityLevel: ""
+            },
             noteRules:[
                 v => !!v || "内容不能为空"
             ],
+            // 左侧框数据
+            leftData: [], // 数据
+            lefeIndex: 0, // 显示索引
+            outputList:[], //产值
+            chooseChargeList:[], // 项目负责人列表
+            chooseRatioList:[], //项目作业组工作列表
+            tableData:[], //产值详情列表
         }),
         methods:{
             getPlanDate(){
@@ -259,7 +403,7 @@
                         this.projects.chooseGroups = response.data.rateList
                         this.projects.groupId = response.data.groupId
                         if(response.data.projectBegunDate != null){
-                            this.projects.project_begun_date = response.data.projectBegunDate    
+                            this.projects.project_begun_date = response.data.projectBegunDate.substring(0,10)
                         }
                         this.project_output = response.data.projectOutPut
                         this.project_outputNote = response.data.projectOutPutNote
@@ -463,7 +607,11 @@
                 }
             },
             chooseDialog(){
-                this.chooseGroupDialog = true
+                this.chooseGroupDialog = true;
+                this.getOutPutData().then(function (data) {
+                    
+                    }
+                )
             },
             countWorkDate(){
                 var workNum = this.project_output / 2400 - parseInt(this.project_output / 2400)
@@ -667,11 +815,262 @@
                 //     item.lastDate = Math.round(item.output / 2400 *1.3)
                 // }
             },
+            //获取全部产值
+            allOutput(){
+                let allCount = 0.0;
+                let chargeList = [];
+                this.outputList.forEach(element=>{
+                    let count = 0.0;
+                    element.outPutWraps.forEach(e => {
+                        if (e.check) {
+                            let output = e.projectRatio * e.typeOutput * e.workLoad
+                            count += output;
+                        }
+                        if (e.projectRatio == null || e.workLoad == null) {
+                            e.projectRatio = 1;
+                            e.workLoad = 0;
+                        }
+                        e.typeOut = this.numFilter(
+                            e.workLoad * e.projectRatio * e.typeOutput
+                        );
+                    });
+                    // //各组预计产值
+                    // element.groupOutput = count;
+
+                    allCount += count;
+                    if(count > 0  ){
+                        if(chargeList.indexOf(element.headMan) == -1) {
+                            chargeList.push(element.headMan);
+
+                        }
+                    }else{
+                        if(chargeList.indexOf(element.headMan) != -1) {
+                            chargeList = chargeList.splice(chargeList.indexOf(element.headMan) , 1 );
+                        }
+                    }
+
+
+                });
+                this.chooseChargeList = chargeList;
+                if(this.chooseChargeList.length > 0)this.projects.project_charge = this.chooseChargeList[0];
+                this.allOutPut = allCount;
+
+                let tableData = []
+                this.outputList.forEach(element=> {
+                    let count = 0.0;
+                    element.outPutWraps.forEach(e => {
+                        if (e.check) {
+                            let output = e.projectRatio * e.typeOutput * e.workLoad
+                            count += output;
+                        }});
+                    //计算各组产值
+                    element.groupOutput = count;
+                    //各组预算产值占比
+                    element.groupOutputRate = this.allOutPut == 0? 0 : this.numFilter(count/this.allOutPut*100);
+                    //各组预计最短工期
+                    var lastNum = count / 2400 *0.7 - parseInt(count / 2400 *0.7)
+                    if(0 < lastNum && lastNum < 0.5){
+                        element.groupShortDate =  parseInt(count / 2400 *0.7) + 0.5
+                    }else{
+                        element.groupShortDate = Math.round(count / 2400 *0.7)
+                    }
+                    //各组预计最迟工期
+                    lastNum = count / 2400 *1.3 - parseInt(count / 2400 *1.3)
+                    if(0 < lastNum && lastNum < 0.5){
+                        element.groupLastDate = parseInt(count / 2400 *1.3) + 0.5
+                    }else{
+                        element.groupLastDate = Math.round(count / 2400 *1.3)
+                    }
+                    if ( count > 0 )tableData.push(element);
+
+                });
+                this.tableData = tableData;
+                return allCount;
+            },
+            //各组预计最迟工期
+            groupLastDate(item){
+                let count = 0.0;
+                item.forEach(e => {
+                    if (e.check) {
+                        count += parseFloat(e.typeOut);
+                    }
+                });
+                var lastNum = count / 2400 *1.3 - parseInt(count / 2400 *1.3)
+                if(0 < lastNum && lastNum < 0.5){
+                    return parseInt(count / 2400 *1.3) + 0.5
+                }else{
+                    return Math.round(count / 2400 *1.3)
+                }
+            },
+            //各组预计最短工期
+            groupShortDate(item){
+                let count = 0.0;
+                item.forEach(e => {
+                    if (e.check) {
+                        count += parseFloat(e.typeOut);
+                    }
+                });
+                var shortNum = count / 2400 * 0.7 - parseInt(count / 2400 * 0.7)
+                if(0.0 < shortNum  && shortNum < 0.5){
+                    return parseInt(count / 2400 * 0.7) + 0.5
+                } else {
+                    return Math.round(count / 2400 * 0.7)
+                }
+            },
+            //各组预算产值占比
+            groupOutputRate(item){
+                let count = 0.0;
+                item.forEach(e => {
+                    if (e.check) {
+                        count += parseFloat(e.typeOut);
+                    }
+                });
+                let allOutput = this.allOutput();
+                if(allOutput == 0) return 0;
+                else {return this.numFilter(count/allOutput*100);}
+            },
+            //各组的预算总产值
+            groupOutput(item) {
+                let count = 0.0;
+                item.forEach(e => {
+                    if (e.check) {
+                        count += parseFloat(e.typeOut);
+                    }
+                });
+                // this.projectOutPut = this.numFilter(count)
+                this.groupOutPutList.forEach(e => {
+                    // console.log(item)
+                    // console.log(e.groupId)
+                    // console.log(item.groupId)
+                    if (e.groupId == item[0].groupId) {
+                        e.projectOutPut = this.numFilter(count);
+                    }
+                });
+                return this.numFilter(count);
+            },
+            //获取工作类型
+            getTypeData() {
+                return new Promise((resolve, reject) => {
+                    axios({
+                        method: "GET",
+                        url: "workType/",
+                        headers: {
+                            Authorization: "Bearer " + sessionStorage.getItem("token")
+                        }
+                    })
+                        .then(success => {resolve(success.data);})
+                        .catch(error => {});
+                });
+            },
+            //获取项目产值
+            getOutPutData() {
+                return new Promise((resolve, reject) => {
+                    this.allOutPut = 0;
+                    this.projectNo = this.$route.query.p_no;
+                    axios({
+                        method: "GET",
+                        url: "project/allGroupOutput/",
+                        headers: {
+                            Authorization: "Bearer " + sessionStorage.getItem("token")
+                        },
+                        params: {
+                            projectNo: this.projectNo
+                        }
+                    })
+                        .then(success => {
+
+                                success.data.forEach(element => {
+                                    this.groupOutPutList.push({
+                                        groupId: element.id,
+                                        projectOutPut: 0
+                                    });
+                                    // element.typeList = []
+                                });
+                            this.leftData = [];
+                            success.data.forEach((e, index) => {
+                                e.outPutWraps.forEach(ele => {
+                                    ele.listIndex = index;
+                                });
+                                this.leftData = this.leftData.concat(e.outPutWraps);
+                            });
+                            this.outputList = success.data;
+                            console.log(this.outputList)
+                        })
+                        .catch(error => {});
+                });
+            },
+            //作业组
+            chooseRatio(list) {
+                //  console.log(params)
+                let params = list.outPutWraps;
+                let temp = [];
+                params.forEach(e => {
+                    if (e.check) {
+                        e.typeOut = this.numFilter(
+                            e.workLoad * e.projectRatio * e.typeOutput
+                        );
+                        if (e.projectRatio == null || e.workLoad == null) {
+                            e.projectRatio = 1;
+                            e.workLoad = 0;
+                        }
+                        temp.push(e);
+                    }
+                });
+                this.allOutPut = this.allOutput();
+                //this.groupOutput(item);
+
+
+                // temp.forEach(t=>{
+                //     this.chooseOutPut.push(t)
+                // })
+                console.log(temp)
+                return temp;
+            },
+            addRatio(item){
+                item.typeOut = this.numFilter(
+                    item.workLoad * item.projectRatio * item.typeOutput
+                );
+                this.allOutPut = this.allOutput();
+                //this.groupOutput(item);
+            },
+            addOutPutToApi() {
+                return new Promise((resolve, reject) => {
+                    axios({
+                        method: "POST",
+                        url: "project/output/",
+                        headers: {
+                            Authorization: "Bearer " + sessionStorage.getItem("token")
+                        },
+                        data: {
+                            projectNo: this.projectNo,
+                            groupList: this.outputList,
+                            outPutWrap: this.groupOutPutList
+                        }
+                    })
+                        .then(success => {
+                            if (this.puttoAuthorize) {
+                                this.snackbarColor = "success";
+                                this.snackbarText = "提交成功";
+                                this.snackbar = true;
+                            } else {
+                                this.snackbarColor = "success";
+                                this.snackbarText = "保存成功";
+                                this.snackbar = true;
+                            }
+                        })
+                        .catch(error => {
+                            this.snackbarColor = "error";
+                            this.snackbarText = error.response.data;
+                            this.snackbar = true;
+                        });
+                });
+            },
+
             //保留小数点后两位的过滤器，尾数不四舍五入
             numFilter(value) {
                 // 截取当前数据到小数点后三位
                 let tempVal = parseFloat(value).toFixed(2)
-                let realVal = tempVal.substring(0,  tempVal.length - 1)
+                let realVal = tempVal.substring(0,tempVal.length)
                 return realVal
             }
         },
@@ -690,11 +1089,14 @@
 
         },
         mounted(){
+            var that = this;
             this.getPlanDate().then(success=>{}).catch(error=>{})
             this.getExecuteStandard().then(success=>{}).catch(error=>{})
             this.getworkNotes().then(success=>{}).catch(error=>{})
             this.getGroupRates().then(success=>{}).catch(error=>{})
             this.getRequires().then(success=>{}).catch(error=>{})
+            this.getTypeData().then(function (data) { that.leftData = data;});
+            this.getOutPutData().then(success=>{})
         }
     }
 </script>
@@ -734,5 +1136,46 @@
     }
     .rateInfo{
         margin-top: 24px
+    }
+
+    .left-data {
+        margin-left: 20px;
+        width: 280px;
+        padding: 5px;
+        margin-right: 20px;
+        overflow: auto;
+        height: 600px;
+        box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+        0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+        background: white;
+    }
+    .right-data{
+        overflow: auto;
+
+        height: 600px;
+        box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+        0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+        background: white;
+    }
+    .detail-data{
+        overflow: auto;
+        margin-left: 10px;
+        max-height: 600px;
+        box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+        0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+        background: white;
+    }
+
+    .bottom-data{
+        margin-left: 20px;
+        font-size: 15px;
+    }
+
+    .chooseCard {
+        padding: 24px;
+        margin-bottom: 10px;
+    }
+    .content-container {
+        display: flex;
     }
 </style>
