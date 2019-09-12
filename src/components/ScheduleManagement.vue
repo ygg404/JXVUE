@@ -24,6 +24,26 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <v-dialog max-width="500px" v-model="changeTimeDialog" persistent>
+            <v-card>
+                <v-card-title><span class="title">修改结算时间</span> </v-card-title>
+                <v-card-text>
+                    <v-container>
+                        <v-menu v-model="addDateMenu" :close-on-content-click="false" :nudge-right="40" lazy transition="scale-transition" offset-y full-width min-width="290px">
+                            <template v-slot:activator="{ on }">
+                                <v-text-field v-model="scheduleDetail.qFinishDateTime" label="签订时间:" prepend-icon="event" readonly  v-on="on"></v-text-field>
+                            </template>
+                            <v-date-picker v-model="scheduleDetail.qFinishDateTime" @input="addDateMenu = false"></v-date-picker>
+                        </v-menu>
+                    </v-container>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" flat @click="colseChangeTimeDialog">返回</v-btn>
+                    <v-btn color="info" @click="changeTimeApi">修改</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
         <v-dialog max-width="500px" v-model="addScheduleDialog" persistent>
             <!-- <v-card>
                 <v-card-title><span class="title">查看</span>
@@ -49,7 +69,7 @@
                  <v-card-text>
                         <v-data-table :headers="shceduleHeader" hide-actions :items="schedule">
                             <template slot="items" slot-scope="props">
-                                <td>{{props.item.id}}</td>
+                                <!--<td>{{props.item.id}}</td>-->
                                 <td>{{props.item.scheduleCreateTime}}</td>
                                 <td>{{props.item.projectRate}}</td>
                                 <td>{{props.item.projectNote}}</td>
@@ -77,20 +97,23 @@
                           :pagination.sync="pagination" class="elevation-1" must-sort>
                 <template slot="items" slot-scope="props">
                     <td>{{props.item.contractNo}}</td>
-                    <td>{{props.item.projectName}}</td>
-                    <td>{{props.item.time}}</td>
-                    <td>{{props.item.projectRate}}%</td>
-                    <td>{{props.item.projectTotalDays}}</td>
-                    <td>{{props.item.projectCountDays}}</td>
+                    <el-tooltip  :content="props.item.projectName" placement="top">
+                            <td class="project_name_row">
+                                {{props.item.projectName}}</td>
+                    </el-tooltip>
+                    <td>{{props.item.projectBegunDate}}</td>
+                    <td class="progress_row"> <v-progress-linear v-model="props.item.projectRate" height="20"><strong style="color: white">{{ Math.ceil(props.item.projectRate) }}%</strong>
+                    </v-progress-linear></td>
+                    <td>{{props.item.projectWorkDate}}</td>
                     <td>{{props.item.wOutTime}}</td>
                     <td>{{props.item.qOutTime}}</td>
+                    <td>{{props.item.qFinishDateTimeYM}}</td>
                     <!-- <v-btn color="blue darken-1" flat @click="showTimeApm(props.item)" title="查看" class="controllEdit">
                         <v-icon small>search</v-icon>查看
                     </v-btn> -->
-                    <v-btn color="blue darken-1" flat @click="getScheuleByNoApi(props.item)" title="查看进度"
-                           class="controllEdit">
-                        <v-icon small>alarm</v-icon>查看进度
-                    </v-btn>
+
+                    <v-icon color="blue darken-1" style="margin-top: 10px;" @click="getScheuleByNoApi(props.item)" title="查看进度">alarm</v-icon>
+                    <v-icon color="blue darken-1" style="margin-top: 10px;" @click="setScheuleTimeByNoApi(props.item)" title="结算月份修改">edit</v-icon>
                 </template>
             </v-data-table>
             <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="snackbarTimeout" top>
@@ -119,6 +142,7 @@
             projectNote: '',
             addTimeDialog: false,
             addScheduleDialog: false,
+            changeTimeDialog:false,
             users: [],
             types: [],
             chooseTypes: [],
@@ -146,20 +170,23 @@
             headers: [
                 {text: '合同编号', value: 'contractNo'},
                 {text: '项目名称', value: 'projectName', sortable: false},
-                {text: '距完成天数', value: 'projectStartTime',sortable: false},
+                {text: '启动时间', value: 'projectBegunDate',sortable: false},
                 {text: '当前进度', value: 'project_rate'},
-                {text: '实际完成天数', value: 'projectStartTime',sortable: false},
-                {text: '要求总天数', value: 'projectStartTime',sortable: false},
-                {text: '作业超时天数', value: 'projectStartTime',sortable: false},
-                {text: '质检超时天数', value: 'projectStartTime',sortable: false}
-                
+                {text: '要求工期', value: 'projectStartTime',sortable: false},
+                {text: '作业超时', value: 'projectStartTime',sortable: false},
+                {text: '质检超时', value: 'projectStartTime',sortable: false},
+                {text: '结算时间', value: 'qFinishDateTime',sortable: false},
+                {text: '操作',sortable: false}
             ],
             shceduleHeader:[
-                {text:'编号',value:'id',sortable:false},
+                // {text:'编号',value:'id',sortable:false},
                 {text:'日期',value:'projectCreateTime',sortable:false},
                 {text:'当前进度',value:'projectRate',sortable:false},
                 {text:'进度内容',value:'projectNote',sortable:false},
         ],
+            addDateMenu: false,
+            //进度详情
+            scheduleDetail:[],
         }),
         methods: {
             chooseTime() {
@@ -304,9 +331,14 @@
                             item.time = moment(item.projectStartDate).add(item.time, 'days').format('YYYY-MM-DD') //项目截止时间
                             let myDate = new Date();
                             myDate = moment(myDate).format('YYYY-MM-DD')//获取当前时间
-                            item.time = this.DateDiff(myDate, item.time)
+                            item.time = this.DateDiff(myDate, item.time);
+                            item.projectBegunDate = moment(new Date(item.projectBegunDate)).format('YYYY-MM-DD')
+                            item.qFinishDateTimeYM = item.qFinishDateTime==null?'':moment(new Date(item.qFinishDateTime)).format('YYYY-MM')
+                            item.qFinishDateTime = item.qFinishDateTime==null?'':moment(new Date(item.qFinishDateTime)).format('YYYY-MM-DD')
                         });
-                        this.projects = response.data.data
+                        this.projects = response.data.data;
+                        this.totalProjects = response.data.total;
+
                         console.log(this.projects)
                         this.projectActuallyFinishNum = response.data.data.projectActuallyFinishNum
                     }).catch(error => {
@@ -354,6 +386,35 @@
                     })
                 })
             },
+            setScheuleTimeByNoApi(item){
+                this.changeTimeDialog = true;
+                this.scheduleDetail = item;
+            },
+            colseChangeTimeDialog(){
+                this.changeTimeDialog = false;
+            },
+            changeTimeApi(){
+                return new Promise((resolve, reject) => {
+                    axios({
+                        method: 'POST',
+                        url: '/projectQuality/changetime/',
+                        headers: {
+                            Authorization: 'Bearer ' + sessionStorage.getItem("token")
+                        },
+                        data: {
+                            projectNo: this.scheduleDetail.projectNo,
+                            finishDateTime:this.scheduleDetail.qFinishDateTime
+                        },
+                    }).then(response => {
+                        resolve(response.data)
+                        //this.schedule = response.data
+                        this.changeTimeDialog = false;
+                        this.getProjectsFromApi();
+                    }).catch(error => {
+                        reject(error.response.data)
+                    })
+                })
+            },
             // chooseUserProject() {
             //     this.users.forEach(e => {
             //         if (e.userName == this.chooseUser) {
@@ -370,7 +431,7 @@
         },
         mounted() {
             this.pagination.descending = true
-            this.pagination.sortBy = 'id'
+            this.pagination.sortBy = 'contractNo'
             this.pagination.rowsPerPage = 25
             if (this.permissions.includes('all_permission')) {
                 this.showChoose = true
@@ -455,5 +516,17 @@
 
     .mb-2 {
         margin-top: 20px !important;
+    }
+
+    .project_name_row{
+        max-width:200px;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+    }
+
+    .progress_row{
+        max-width: 100px;
+        text-align:center;
     }
 </style>

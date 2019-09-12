@@ -10,11 +10,11 @@
                             <v-flex md1><v-text-field label="检查类型:" v-model="qualityType1.check_type"></v-text-field></v-flex>
                             <v-flex md2><v-text-field label="检查结果:" v-model="qualityType1.check_result"></v-text-field></v-flex>
                             <v-flex md3>
-                                <v-flex md2><span>错漏数量</span></v-flex>
-                                <v-flex md2><v-text-field label="A类:" v-model="qualityType1.check_a" @change="add1()" type="number"></v-text-field></v-flex>
-                                <v-flex md2><v-text-field label="B类:" v-model="qualityType1.check_b" @change="add1()" type="number"></v-text-field></v-flex>
-                                <v-flex md2><v-text-field label="C类:" v-model="qualityType1.check_c" @change="add1()" type="number"></v-text-field></v-flex>
-                                <v-flex md2><v-text-field label="D类:" v-model="qualityType1.check_d" @change="add1()" type="number"></v-text-field></v-flex>
+                                <v-flex md4><span>错漏数量</span></v-flex>
+                                <v-flex md4><v-text-field label="A类:" v-model="qualityType1.check_a" @change="add1()" type="number"></v-text-field></v-flex>
+                                <v-flex md4><v-text-field label="B类:" v-model="qualityType1.check_b" @change="add1()" type="number"></v-text-field></v-flex>
+                                <v-flex md4><v-text-field label="C类:" v-model="qualityType1.check_c" @change="add1()" type="number"></v-text-field></v-flex>
+                                <v-flex md4><v-text-field label="D类:" v-model="qualityType1.check_d" @change="add1()" type="number"></v-text-field></v-flex>
                             </v-flex>
                             <v-flex md1><v-text-field label="检查项扣分:" v-model="qualityType1.checkPoints" disabled></v-text-field></v-flex>
                         </v-flex>

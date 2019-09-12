@@ -36,14 +36,15 @@
 
     <div class="content-container">
       <div class="left-data">
-        <v-checkbox
+        <el-checkbox
           v-for="(types, index) in leftData"
           :key="index"
           :label="types.typeName"
           v-show="types.listIndex === lefeIndex"
           class="shrink mr-2"
           v-model="types.check"
-        ></v-checkbox>
+          style="width: 90%;word-wrap: break-word;word-break: break-all;"
+        ></el-checkbox>
       </div>
       <!-- <div> -->
       <v-radio-group v-model="lefeIndex">
@@ -449,7 +450,7 @@ export default {
   display: flex;
 }
 .left-data {
-  width: 300px;
+  width: 320px;
   margin-top: 24px;
   padding: 5px;
   margin-right: 20px;

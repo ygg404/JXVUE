@@ -14,8 +14,6 @@
                                 <v-card-text class="subheading">委托要求:{{project_plan.project_note}}</v-card-text>
                                 <v-card-text class="subheading">作业内容: {{project_plan.project_workNote}}</v-card-text>
                                 <v-card-text class="subheading">技术要求: {{project_plan.project_workRequire}}</v-card-text>
-                            </v-flex>
-                            <v-flex>
                                 <v-card-text class="subheading">业务负责人:{{works.project_projectBusiness}}</v-card-text>
                                 <v-card-text class="subheading">联系人:{{project_plan.project_user}}</v-card-text>
                                 <v-card-text class="subheading">联系电话: {{project_plan.project_phone}}</v-card-text>

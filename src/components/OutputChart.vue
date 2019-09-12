@@ -2,22 +2,35 @@
     <v-container fluid>
         <v-card width="100%">
             <v-card-title>
-                <v-layout row wrap style="display: flex;flex-wrap: wrap">
-                    <el-date-picker v-model="chooseDate3" type="daterange" @change="refreshData" range-separator="至"
-                                    start-placeholder="开始日期" end-placeholder="结束日期"
-                                    align="right"></el-date-picker>
-                    <v-flex xs12 sm6 md2>
-                        <v-select v-model="selectWorkId2" :items="workIds" attach chips label="作业组:" value="全部"
-                                  item-value="id" item-text="gName" @change="idData"></v-select>
-                    </v-flex>
-                    <v-flex xs12 sm6 md2>
-                        <v-btn slot="activator" @click="doPrint" color="primary" dark class="mb-2">打印</v-btn>
-                    </v-flex>
-                </v-layout>
+                <el-date-picker
+                        v-model="startDate"
+                        type="month" clearable
+                        placeholder="起始月份">
+                </el-date-picker> --
+                <el-date-picker
+                        v-model="endDate"
+                        type="month" clearable
+                        placeholder="结束月份">
+                </el-date-picker>
+
+                <v-flex xs12 sm6 md2 style="margin-left: 20px;">
+                    <v-select v-model="selectWorkId2" :items="workIds" attach chips label="作业组:" value="全部"
+                              item-value="id" item-text="gName" @change="idData"></v-select>
+                </v-flex>
+                <v-flex xs12 sm6 md2>
+                    <v-btn slot="activator" @click="doPrint" color="primary" dark class="mb-2">打印</v-btn>
+                </v-flex>
+                <!--<v-layout row wrap style="display: flex;flex-wrap: wrap">-->
+
+                    <!--<el-date-picker v-model="chooseDate3" type="daterange" @change="refreshData" range-separator="至"-->
+                                    <!--start-placeholder="开始日期" end-placeholder="结束日期"-->
+                                    <!--align="right"></el-date-picker>-->
+
+                <!--</v-layout>-->
             </v-card-title>
             <div class="print">
                 <h1 style="text-align: center">产值统计表</h1>
-                <h3 style="text-align: center">{{startDate}}至{{endDate}}</h3>
+                <h3 style="text-align: center">{{tabTitle}}</h3>
 
                 <div v-if="items.length>1">
                     <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
@@ -28,7 +41,7 @@
                             <tr v-for="pr in props.item.planRateList" :key="pr.id">
                                 <td>{{pr.projectName}}</td>
                                 <td>{{pr.projectType}}</td>
-                                <td>{{pr.finishDateTime}}</td>
+                                <td>{{pr.finishDateTime.replace(' 00:00:00' , '')}}</td>
                                 <td>{{pr.outputNum.toFixed(2)}}</td>
                             </tr>
                             <tr>
@@ -95,7 +108,8 @@
                 endDate: '', // 结束日期
                 projectSums:0, //总项目数
                 outputNumSum: 0, //总产值
-                aa:[]
+                aa:[],
+                tabTitle:''//列表标题
             }
         },
         methods: {
@@ -107,14 +121,18 @@
                 window.location.reload()
             },
             getOutputChartFromApi() {
+                let start = moment(this.startDate).format('YYYY-MM-DD');
+                let end = new Date(  this.endDate.getFullYear(), this.endDate.getMonth() + 1, 0 ) ;
+                end = moment(end).format('YYYY-MM-DD')
+                //let end = endDate.getFullYear() + '-' + (endDate.getMonth()+1)<10? '0'+(endDate.getMonth()+1): (endDate.getMonth()+1) +  '-01';
                 return new Promise((resoleve, reject) => {
                     this.loading = true;
                     axios({
                         methods: 'GET',
                         url: 'outputcharts/',
                         params: {
-                            startDate: this.startDate,
-                            endDate: this.endDate,
+                            startDate: start,
+                            endDate: end,
                             workId: this.selectWorkId2
                         },
                         headers: {
@@ -166,23 +184,19 @@
             },
             // 初始化年月日
             getDate() {
-                let myDate = new Date();
-                let year = myDate.getFullYear(); //年
-                let month;
-                if(myDate.getMonth() >= 1){
-                    month = myDate.getMonth()+1; //月
+
+                this.startDate = new Date(new Date().getFullYear(), new Date().getMonth() -1 , 1);
+                this.endDate = new Date(new Date().getFullYear(), new Date().getMonth() -1 , 1);
+
+            },
+            //列表标题设定
+            setTabTitle(){
+                if(this.startDate.getFullYear() == this.endDate.getFullYear() && this.startDate.getMonth() == this.endDate.getMonth()){
+                    this.tabTitle = this.startDate.getFullYear() + '年' + (this.startDate.getMonth()+ 1) + '月';
+                }else{
+                    this.tabTitle = this.startDate.getFullYear() + '年' + (this.startDate.getMonth()+ 1) + '月' + '至' +
+                                    this.endDate.getFullYear() + '年' + (this.endDate.getMonth()+ 1) + '月'
                 }
-                if(myDate.getMonth() == 12) {
-                    month = 1;
-                }
-                let date = myDate.getDate();// 日
-                if(month > 12) {
-                    month = month - 12;
-                    year = year + 1;
-                }
-                this.aa =[ `${year}-${month-1}-01`, `${year}-${month}-${date}` ];
-                this.startDate = moment(this.aa[0]).format('YYYY-MM-DD');
-                this.endDate = moment(this.aa[1]).format('YYYY-MM-DD');
             }
         },
         mounted() {
@@ -214,7 +228,27 @@
                         this.getOutputChartFromApi();
                     }
                 }
+            },
+            startDate:{
+                handler(val){
+                    this.startDate = val;
+                    this.endDate = val;
+                    this.setTabTitle();
+                    this.getOutputChartFromApi();
+                    console.log(val);
+                }
+            },
+            endDate:{
+              handler(val){
+                  this.endDate = val;
+                  if(val < this.startDate){this.startDate = val;}
+                  this.setTabTitle();
+                  this.getOutputChartFromApi();
+
+              }
             }
+
+
         }
     }
 </script>

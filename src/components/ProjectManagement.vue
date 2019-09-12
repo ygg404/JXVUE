@@ -49,10 +49,14 @@
                     <td>{{props.item.projectCharge}}</td>
                     <td>{{props.item.projectStartTime}}</td>
                     <td>{{props.item.projectStage}}</td>
-                    <v-btn color="blue darken-1" flat @click="editProjectDialogData(props.item)" title="改阶段" class="controllEdit"><v-icon small> edit</v-icon>修改阶段</v-btn>
-                    <v-btn color="blue darken-1" flat @click="SelectItem(props.item)" title="查看" class="controllSelect"><v-icon small>search</v-icon>查看</v-btn>
-                    <v-btn color="blue darken-1" flat @click="print(props.item)" title="打印" class="controllSelect"><v-icon small>print</v-icon>打印</v-btn>
-
+                    <!--<v-btn color="blue darken-1" flat @click="editProjectDialogData(props.item)" title="改阶段" class="controllEdit"><v-icon small> edit</v-icon>修改阶段</v-btn>-->
+                    <!--<v-btn color="blue darken-1" flat @click="SelectItem(props.item)" title="查看" class="controllSelect"><v-icon small>search</v-icon>查看</v-btn>-->
+                    <!--<v-btn color="blue darken-1" flat @click="print(props.item)" title="打印" class="controllSelect"><v-icon small>print</v-icon>打印</v-btn>-->
+                    <td style="min-width:140px;">
+                        <v-icon color="blue darken-1" flat @click="editProjectDialogData(props.item)" title="修改阶段"> edit</v-icon>
+                        <v-icon color="blue darken-1" flat @click="SelectItem(props.item)" title="查看">search</v-icon>
+                        <v-icon color="blue darken-1" flat @click="print(props.item)" title="打印" >print</v-icon>
+                    </td>
                 </template>
             </v-data-table>
             <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="snackbarTimeout" top>

@@ -28,15 +28,16 @@
                             <v-select  label="技术要求快捷输入" :items="requires" item-text="shortNote" item-value="shortNote" multiple @change="chooseRequire" v-model="chooseRequiresData"></v-select>
                         </v-flex>
                         <v-textarea outline name="input-7-4" label="技术要求" v-model="projects.project_work_require" :rules="noteRules"></v-textarea>
-                        <v-flex>
-                            <v-text-field v-model="project_workLoad" label="预计工作量:" :rules="noteRules" prepend-icon="assignment" ></v-text-field>
-                        </v-flex>
+
                         <v-layout>
                             <v-flex xs5>
-                                <v-text-field v-model="project_outputNote" label="产值预算明细:" :rules="noteRules" prepend-icon="assignment" ></v-text-field>
+                                <v-text-field v-model="project_workLoad" label="预计工作量:" :rules="noteRules" prepend-icon="assignment" ></v-text-field>
                             </v-flex>
+                            <!--<v-flex xs5>-->
+                                <!--<v-text-field v-model="project_outputNote" label="产值预算明细:" :rules="noteRules" prepend-icon="assignment"  ></v-text-field>-->
+                            <!--</v-flex>-->
                             <v-flex xs5 class="oInfo">
-                                <v-text-field v-model="project_output" label="预计产值:" :rules="noteRules" prepend-icon="card_travel" type="number" @change="countWorkDate"></v-text-field>
+                                <v-text-field v-model="project_output" label="预计产值:" :rules="noteRules" prepend-icon="card_travel" type="number" @change="countWorkDate" @click:prepend="budgetDialogEvent" ></v-text-field>
                             </v-flex>
                         </v-layout>
                         <v-layout>
@@ -90,17 +91,42 @@
             
         </v-layout>
 
-              <v-card class="rateInfo">
-                <v-data-table :headers="rateHeaders" hide-actions :items="groupRates">
-                    <template slot="items" slot-scope="props">
-                        <td>{{props.item.gName}}</td>
-                        <td>{{props.item.groupOutput}}</td>
-                        <td>{{props.item.groupNotSuccessOutPut}}</td>
-                        <td>{{props.item.projectCount}}</td>
-                        <td>{{props.item.groupRate}}</td>
+              <!--<v-card class="rateInfo">-->
+                <!--<v-data-table :headers="rateHeaders" hide-actions :items="groupRates" show-expand  class="elevation-1">-->
+                    <!--<template slot="items" slot-scope="props">-->
+                        <!--<td>{{props.item.gName}}</td>-->
+                        <!--<td>{{props.item.groupOutput}}</td>-->
+                        <!--<td>{{props.item.groupNotSuccessOutPut}}</td>-->
+                        <!--<td>{{props.item.projectCount}}</td>-->
+                        <!--<td>{{props.item.groupRate}}</td>-->
+                    <!--</template>-->
+                <!--</v-data-table>-->
+            <!--</v-card>-->
+
+        <v-card class="rateInfo">
+            <el-table  :data="groupRates" style="width: 100%" >
+                <el-table-column type="expand" >
+                    <template slot-scope="props">
+                        <el-table  :data="props.row.planRateList" style="width: 100%;" :row-class-name="getTableclass" border>
+                            <el-table-column label="项目名称" prop="projectName"></el-table-column>
+                            <el-table-column label="项目启动时间" prop="startDateTime"></el-table-column>
+                            <el-table-column label="预算产值" prop="project_output"></el-table-column>
+                            <el-table-column label="实际产值" prop="actuallyOutput"></el-table-column>
+                            <el-table-column prop="project_rate" label="进度" >
+                                <template slot-scope="scope">
+                                    <el-progress :text-inside="true"  :stroke-width="26" :percentage="scope.row.project_rate" ></el-progress>
+                                </template>
+                            </el-table-column>
+                        </el-table>
                     </template>
-                </v-data-table>
-            </v-card>
+                </el-table-column>
+                <el-table-column label="组名" prop="gName"></el-table-column>
+                <el-table-column label="已安排产值" prop="groupOutput"></el-table-column>
+                <el-table-column label="未完成产值" prop="groupNotSuccessOutPut"></el-table-column>
+                <el-table-column label="未完成项目数" prop="projectCount"></el-table-column>
+                <!--<el-table-column label="安排系数" prop="groupRate"></el-table-column>-->
+            </el-table>
+        </v-card>
 
         <v-layout align-center justify-center fill-height class="bottomBtn">
             <v-btn color="orange" class="white--text" @click="$router.go(-1)">返回</v-btn>
@@ -108,52 +134,52 @@
             <v-btn color="success" @click="clickPutToWork">提交到作业</v-btn>
         </v-layout>
 
-        <!--<v-dialog max-width="800px" v-model="chooseGroupDialog" persistent>-->
-            <!--<v-card>-->
-                <!--<v-card-title><span class="title">选择作业组</span></v-card-title>-->
-                <!--<v-card-text>-->
-                    <!--<v-container>-->
-                        <!--<v-layout wrap>-->
-                            <!--<v-flex v-for="group in groups" :key="group.id" >-->
-                                <!--<v-form align-center>-->
-                                    <!--<v-layout>-->
-                                        <!--<v-flex xs3>-->
-                                            <!--<v-checkbox :label="group.gName" class="shrink mr-2" v-model="group.choosedItem" ></v-checkbox>-->
-                                        <!--</v-flex>-->
-                                        <!--<v-flex xs4>-->
-                                            <!--<v-text-field  label="占比" type="number" :rules="noteRules" :disabled="!group.choosedItem" v-model="group.rate" @change="addRate(group)"></v-text-field>-->
-                                        <!--</v-flex>-->
-                                        <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
-                                        <!--<v-flex xs4>-->
-                                            <!--<v-text-field  label="产值" type="number" :rules="noteRules" :disabled="!group.choosedItem" v-model="group.output"  @change="addOutPut(group)"></v-text-field>-->
-                                        <!--</v-flex>-->
-                                        <!--<v-flex xs3 class="shortDate">-->
-                                            <!--<v-text-field  label="最短工期" type="number" :rules="noteRules" :disabled="!group.choosedItem" v-model="group.shortDate"></v-text-field>-->
-                                        <!--</v-flex>-->
-                                        <!--<v-flex xs3 class="shortDate">-->
-                                            <!--<v-text-field  label="最迟工期" type="number" :rules="noteRules" :disabled="!group.choosedItem" v-model="group.lastDate"></v-text-field>-->
-                                        <!--</v-flex>-->
-                                    <!--</v-layout>-->
-                                <!--</v-form>-->
-                            <!--</v-flex>-->
-                            <!--<v-select v-model="projects.project_charge" :items="chooseCharge" label="项目负责人" item-value="headMan" item-text="headMan"  single-line></v-select>-->
-                        <!--</v-layout>-->
-                    <!--</v-container>-->
+        <v-dialog max-width="80%" v-model="chooseGroupDialog" persistent>
+            <v-card>
+                <v-card-title><span class="title">选择作业组</span></v-card-title>
+                <v-card-text>
+                    <v-container>
+                        <v-layout wrap>
+                            <v-flex v-for="group in groups" :key="group.id" >
+                                <v-form align-center>
+                                    <v-layout>
+                                        <v-flex xs3>
+                                            <v-checkbox :label="group.gName" class="shrink mr-2" v-model="group.choosedItem" ></v-checkbox>
+                                        </v-flex>
+                                        <v-flex xs4>
+                                            <v-text-field  label="占比" type="number" :rules="noteRules" :disabled="!group.choosedItem" v-model="group.rate" @change="addRate(group)"></v-text-field>
+                                        </v-flex>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <v-flex xs4>
+                                            <v-text-field  label="产值" type="number" :rules="noteRules" :disabled="!group.choosedItem" v-model="group.output"  @change="addOutPut(group)"></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs3 class="shortDate">
+                                            <v-text-field  label="最短工期" type="number" :rules="noteRules" :disabled="!group.choosedItem" v-model="group.shortDate"></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs3 class="shortDate">
+                                            <v-text-field  label="最迟工期" type="number" :rules="noteRules" :disabled="!group.choosedItem" v-model="group.lastDate"></v-text-field>
+                                        </v-flex>
+                                    </v-layout>
+                                </v-form>
+                            </v-flex>
+                            <v-select v-model="projects.project_charge" :items="chooseCharge" label="项目负责人" item-value="headMan" item-text="headMan"  single-line></v-select>
+                        </v-layout>
+                    </v-container>
 
-                <!--</v-card-text>-->
-                <!--<v-card-actions>-->
-                    <!--<v-spacer></v-spacer>-->
-                    <!--<v-btn color="blue darken-1" flat @click="chooseGroupDialog = false">取消</v-btn>-->
-                    <!--<v-btn color="info" @click="chooseGroupRate(groups)">确定</v-btn>-->
-                <!--</v-card-actions>-->
-            <!--</v-card>-->
-        <!--</v-dialog>-->
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" flat @click="chooseGroupDialog = false">取消</v-btn>
+                    <v-btn color="info" @click="chooseGroupRate(groups)">确定</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
 
-        <v-dialog width="90%" v-model="chooseGroupDialog" persistent>
+        <v-dialog width="90%" v-model="budgetDialog" persistent>
             <v-card>
                 <v-card-title><span class="title">产值预算</span></v-card-title>
                 <div class="content-container">
-                    <div class="left-data">
+                    <div class="leftdata">
                         <div v-for="(types, index) in leftData" >
                             <el-checkbox
                             :key="index"
@@ -161,20 +187,9 @@
                             v-show="types.listIndex === lefeIndex"
                             v-model="types.check"
                             size="medium"
-                            @change="checked=>allOutput()"
+                            @change="checked=>getAllOutput()"
                             ></el-checkbox>
                         </div>
-                            <!--<el-checkbox-->
-                                    <!--v-for="(types, index) in leftData"-->
-                                    <!--:key="index"-->
-                                    <!--:label="types.typeName"-->
-                                    <!--v-show="types.listIndex === lefeIndex"-->
-                                    <!--v-model="types.check"-->
-                                    <!--size="medium"-->
-                                    <!--:change="allOutput"-->
-                            <!--&gt;</el-checkbox>-->
-
-
                     </div>
 
                     <div class="right-data">
@@ -208,22 +223,18 @@
                                         <td>{{props.item.typeOut}}</td>
                                     </template>
                                 </v-data-table>
-                                <div class="content-container" style="margin-top: 15px">
-                                    <strong class="bottom-data">预算产值：<strong style="color: red">{{list.groupOutput}}</strong> </strong>
-                                    <strong class="bottom-data">占比：<strong style="color: red">{{list.groupOutputRate}}</strong>%</strong>
-                                    <strong class="bottom-data">最短工期：<strong style="color: red">{{list.groupShortDate}}</strong></strong>
-                                    <strong class="bottom-data">最迟工期：<strong style="color: red">{{list.groupLastDate}}</strong></strong>
-                                </div>
+                                <!--<div class="content-container" style="margin-top: 15px">-->
+                                    <!--<strong class="bottom-data">预算产值：<strong style="color: red">{{list.groupOutput}}</strong> </strong>-->
+                                    <!--<strong class="bottom-data">占比：<strong style="color: red">{{list.groupOutputRate}}</strong>%</strong>-->
+                                    <!--<strong class="bottom-data">最短工期：<strong style="color: red">{{list.groupShortDate}}</strong></strong>-->
+                                    <!--<strong class="bottom-data">最迟工期：<strong style="color: red">{{list.groupLastDate}}</strong></strong>-->
+                                <!--</div>-->
                             </v-card>
 
                          </div>
                     </v-radio-group>
                     </div>
                     <div class="detail-data">
-                        <v-card-text>
-                            <strong>项目负责人:</strong>
-                            <v-select v-model="projects.project_charge" :items="chooseChargeList" label="项目负责人" item-value="headMan" item-text="headMan"  single-line></v-select>
-                        </v-card-text>
                         <v-card-text>
                             <div><strong>项目总预算产值：<strong style="color: red">{{allOutPut}}</strong></strong></div>
                             <el-table :data="tableData" style="width: 100%" show-summary >
@@ -238,8 +249,8 @@
                 </div>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" flat @click="chooseGroupDialog = false">取消</v-btn>
-                    <v-btn color="info" @click="chooseGroupRate(groups)">确定</v-btn>
+                    <v-btn color="blue darken-1" flat @click="budgetDialog = false">取消</v-btn>
+                    <v-btn color="info" @click="addOutPutToApi">确定</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -256,6 +267,7 @@
     import store from '@/store.js'
     export default {
         data:()=>({
+            budgetDialog: false,
             chooseGroupDialog:false,
             showWrokGroup:false,
             projectNo:'',
@@ -372,6 +384,9 @@
             tableData:[], //产值详情列表
         }),
         methods:{
+            getTableclass(){
+              return 'rowstyle';
+            },
             getPlanDate(){
                 this.projectNo = this.$route.query.p_no
                 return new Promise((resolve,reject) =>{
@@ -510,7 +525,7 @@
                 return new Promise((resolve,reject) =>{
                     axios({
                         method:'GET',
-                        url:'project/coe/',
+                        url:'project/datacoe/',
                         headers:{
                             Authorization: "Bearer " + sessionStorage.getItem('token')
                         },
@@ -612,6 +627,11 @@
                     
                     }
                 )
+            },
+            budgetDialogEvent(){
+              this.budgetDialog = true;
+                this.getOutPutData().then();
+                this.getAllOutput();
             },
             countWorkDate(){
                 var workNum = this.project_output / 2400 - parseInt(this.project_output / 2400)
@@ -816,7 +836,7 @@
                 // }
             },
             //获取全部产值
-            allOutput(){
+            getAllOutput(){
                 let allCount = 0.0;
                 let chargeList = [];
                 this.outputList.forEach(element=>{
@@ -925,7 +945,7 @@
                         count += parseFloat(e.typeOut);
                     }
                 });
-                let allOutput = this.allOutput();
+                let allOutput = this.getAllOutput();
                 if(allOutput == 0) return 0;
                 else {return this.numFilter(count/allOutput*100);}
             },
@@ -1016,7 +1036,7 @@
                         temp.push(e);
                     }
                 });
-                this.allOutPut = this.allOutput();
+                this.allOutPut = this.getAllOutput();
                 //this.groupOutput(item);
 
 
@@ -1027,10 +1047,10 @@
                 return temp;
             },
             addRatio(item){
-                item.typeOut = this.numFilter(
-                    item.workLoad * item.projectRatio * item.typeOutput
-                );
-                this.allOutPut = this.allOutput();
+                // item.typeOut = this.numFilter(
+                //     item.workLoad * item.projectRatio * item.typeOutput
+                // );
+                this.getAllOutput();
                 //this.groupOutput(item);
             },
             addOutPutToApi() {
@@ -1048,15 +1068,13 @@
                         }
                     })
                         .then(success => {
-                            if (this.puttoAuthorize) {
-                                this.snackbarColor = "success";
-                                this.snackbarText = "提交成功";
-                                this.snackbar = true;
-                            } else {
-                                this.snackbarColor = "success";
-                                this.snackbarText = "保存成功";
-                                this.snackbar = true;
-                            }
+
+                            this.snackbarColor = "success";
+                            this.snackbarText = "保存成功";
+                            this.snackbar = true;
+                            this.budgetDialog = false;
+                            this.project_output = this.allOutPut;
+                            this.countWorkDate();
                         })
                         .catch(error => {
                             this.snackbarColor = "error";
@@ -1065,7 +1083,6 @@
                         });
                 });
             },
-
             //保留小数点后两位的过滤器，尾数不四舍五入
             numFilter(value) {
                 // 截取当前数据到小数点后三位
@@ -1138,8 +1155,9 @@
         margin-top: 24px
     }
 
-    .left-data {
+    .leftdata {
         margin-left: 20px;
+        margin-top: 0px;
         width: 280px;
         padding: 5px;
         margin-right: 20px;
@@ -1177,5 +1195,9 @@
     }
     .content-container {
         display: flex;
+    }
+
+    .el-table .rowstyle{
+        background: burlywood;
     }
 </style>

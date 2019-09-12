@@ -127,7 +127,7 @@
                 handler(newName, oldName) {
                     if (newName === null) {
                         // 刷新数据
-                        this.projectSums = 0;
+                        this.projectSumsprojectSums = 0;
                         this.outPutNumSum = 0;
                         this.getDate();
                         this.getCollectChartFromApi();
