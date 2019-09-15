@@ -79,7 +79,7 @@
                         <!--<v-btn v-if="props.item.backWorkList && props.item.charge" color="blue darken-1" flat @click="seleBack(props.item)" title="查看返修" class="controllAdd"><v-icon small>poll</v-icon>返修</v-btn>-->
                         <v-icon class="icobtn"  v-if="props.item.charge" color="blue darken-1" flat @click="editPlan(props.item)" title="修改"> edit</v-icon>
                         <v-icon class="icobtn" v-if="props.item.charge" color="blue darken-1" flat @click="print(props.item)" title="打印">print</v-icon>
-                        <v-icon class="icobtn" v-if="props.item.charge" color="blue darken-1" flat @click="updateStage(props.item,1)" title="改状态">replay</v-icon>
+                        <v-icon class="icobtn" v-if="props.item.charge" color="blue darken-1" flat @click="updateStage(props.item,0)" title="改状态">replay</v-icon>
                         <v-icon class="icobtn" v-if="props.item.backWorkList && props.item.charge" color="blue darken-1" flat @click="seleBack(props.item)" title="查看返修">poll</v-icon>
                     </div>
                 </template>
