@@ -26,6 +26,8 @@
 
 <script>
 import store from '@/store.js'
+import moment from 'moment'
+
 export default {  
     data: ()=>({
         projects:[],
@@ -111,6 +113,9 @@ export default {
         }
     },
     mounted(){
+        this.startDate =  moment(new Date(new Date().getFullYear(), new Date().getMonth() -1 , 1)).format('YYYY-MM-DD');
+        this.endDate =  moment(new Date()).format('YYYY-MM-DD');
+        this.chooseDate = [this.startDate ,this.endDate ];
         this.pagination.rowsPerPage = 25
         this.pagination.descending = true
         this.pagination.sortBy = 'id'

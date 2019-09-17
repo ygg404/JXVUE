@@ -14,6 +14,15 @@
                                 <v-text-field v-model="type.name" label="作业类型名称:"></v-text-field>
                                 <v-text-field v-model="type.unit" label="工作量计量单位:"></v-text-field>
                                 <v-text-field v-model="type.output" label="每单位产值:" type="number"></v-text-field>
+                                <el-select v-model="value1" outlined multiple placeholder="请选择项目类型" style="width: 100%;">
+                                    <el-option
+                                            v-for="item in projectTypesOptions"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                    </el-option>
+                                </el-select>
+
                             </v-flex>
                             </v-layout>
                         </v-container>
@@ -36,6 +45,14 @@
                                 <v-text-field v-model="type.name" label="作业类型名称:"></v-text-field>
                                 <v-text-field v-model="type.unit" label="工作量计量单位:"></v-text-field>
                                 <v-text-field v-model="type.output" label="每单位产值:" type="number" ></v-text-field>
+                                <el-select v-model="value1" multiple placeholder="请选择项目类型" style="width: 100%;">
+                                    <el-option
+                                            v-for="item in projectTypesOptions"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                    </el-option>
+                                </el-select>
                             </v-flex>
                             </v-layout>
                         </v-container>
@@ -54,6 +71,11 @@
                 <td>{{props.item.typeName}}</td>
                 <td>{{props.item.typeUnit}}</td>
                 <td>{{props.item.typeOut}}</td>
+                <td>
+                    <template slot="props.item.ptypeList" slot-scope="scope">
+                        <span>{{scope.item.ptypeName}}</span>
+                    </template>
+                </td>
                 <td>
                     <v-btn color="blue darken-1" flat class="typeBtn" @click="editTypeDialogData(props.item)"><v-icon small>edit</v-icon>编辑</v-btn>
                     <v-btn color="error" flat @click="deleteType(props.item)"><v-icon color="error" small>delete</v-icon>删除</v-btn>
@@ -92,8 +114,12 @@ export default {
             {text:'编号',value:'id'},
             {text:'作业类型名称',value:'type_name'},
             {text:'工作计量单位',value:'unit'},
-            {text:'每单位产值',value:'unit_output'}
-        ]
+            {text:'每单位产值',value:'unit_output'},
+            {text:'项目类型',value:'project_type'}
+        ],
+        projectTypesList:[],
+        projectTypesOptions:[],
+        value1: [],
     }),
     methods:{
         getTypesFromApi(){
@@ -124,7 +150,8 @@ export default {
         },
         addType(){
             if(this.permissions.includes('all_permission') || this.permissions.includes('sys_setting')){
-                this.addTypeDialog = true
+                this.addTypeDialog = true;
+                this.value1 = [];
             }else{
                 this.snackbar = true
                 this.snackbarColor = 'error'
@@ -133,6 +160,7 @@ export default {
             }
         },
         addTypeToApi(){
+            console.log(this.value1);
             return new Promise((resolve,reject) =>{
                 axios({
                     method:'POST',
@@ -243,7 +271,32 @@ export default {
                         this.snackbarText = error.response.data.message
                     })
             }
-        }
+        },
+        //获取项目类型列表
+        getTypeListFromApi(){
+            return new Promise((resolve,reject) =>{
+                axios({
+                    method:'GET',
+                    url:'projectTypes/',
+                    headers:{
+                        Authorization: "Bearer " + sessionStorage.getItem('token')
+                    }
+                }).then(response => {
+                    this.projectTypesList = response.data;
+                    this.projectTypesOptions = []
+                    for(let dat of response.data){
+                        let option ={
+                            value : dat.id,
+                            label : dat.name
+                        };
+                        this.projectTypesOptions.push(option);
+                    }
+                    resolve(response.data)
+                }).catch(error =>{
+                    reject(error.response.data)
+                })
+            })
+        },
     },
     mounted(){
         this.pagination.descending = true
@@ -252,14 +305,21 @@ export default {
         .then(data =>{
             this.types = data.data
             this.totalTypes = data.total
-        })
+        });
+        this.getTypeListFromApi();
     },
     watch:{
         pagination:{
             handler(){
                 this.getTypesFromApi()
                 .then(data=>{
-                    this.types = data.data
+                    this.types = data.data;
+                    for(let type of this.types){
+                        type.ptypeName = ""
+                        for(let ptype of type.ptypeList){
+                            type.ptypeName += ptype.ptypeName + ",";
+                        }
+                    }
                     this.totalTypes = data.total
                 })
             }

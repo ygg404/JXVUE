@@ -61,27 +61,18 @@
                     <td>{{props.item.projectAuthorize}}</td>
                     <td>{{props.item.projectStartTime}}</td>
                     <td>{{props.item.projectStage}}</td>
-
-                    <div v-if="props.item.workStage == 0" style="margin-top: 10px;">
-                        <!--<v-btn v-if="props.item.charge" color="blue darken-1" flat @click="editPlan(props.item)" title="修改" class="controllEdit"><v-icon small> edit</v-icon>编辑</v-btn>-->
-                        <v-icon class="icobtn"  v-if="props.item.charge" color="blue darken-1" flat @click="editPlan(props.item)" title="修改"> edit</v-icon>
-                        <!--<v-btn v-if="props.item.charge" color="blue darken-1" flat @click="print(props.item)" title="打印" class="controllSelect"><v-icon small>print</v-icon>打印</v-btn>-->
-                        <v-icon class="icobtn"  v-if="props.item.charge" color="blue darken-1" flat @click="print(props.item)" title="打印">print</v-icon>
-                        <!--<v-btn v-if="props.item.charge" color="blue darken-1" flat @click="updateStage(props.item,1)" title="改状态" class="controllAdd"><v-icon small>replay</v-icon>修改状态</v-btn>-->
-                        <v-icon class="icobtn"  v-if="props.item.charge" color="blue darken-1" flat @click="updateStage(props.item,1)" title="改状态">replay</v-icon>
-                        <!--<v-btn v-if="props.item.backWorkList && props.item.charge" color="blue darken-1" flat @click="seleBack(props.item)" title="查看返修" class="controllAdd"><v-icon small>poll</v-icon>返修</v-btn>-->
-                        <v-icon class="icobtn" v-if="props.item.backWorkList && props.item.charge" color="blue darken-1" flat @click="seleBack(props.item)" title="查看返修">poll</v-icon>
-                    </div>
-                    <div v-else>
-                        <!--<v-btn v-if="props.item.charge" color="blue darken-1" flat @click="editPlan(props.item)" title="修改" class="controllEdit"><v-icon small> edit</v-icon>编辑</v-btn>-->
-                        <!--<v-btn v-if="props.item.charge" color="blue darken-1" flat @click="print(props.item)" title="打印" class="controllSelect"><v-icon small>print</v-icon>打印</v-btn>-->
-                        <!--<v-btn v-if="props.item.charge" color="blue darken-1" flat @click="updateStage(props.item,0)" title="改状态" class="controllAdd"><v-icon small>replay</v-icon>修改状态</v-btn>-->
-                        <!--<v-btn v-if="props.item.backWorkList && props.item.charge" color="blue darken-1" flat @click="seleBack(props.item)" title="查看返修" class="controllAdd"><v-icon small>poll</v-icon>返修</v-btn>-->
-                        <v-icon class="icobtn"  v-if="props.item.charge" color="blue darken-1" flat @click="editPlan(props.item)" title="修改"> edit</v-icon>
-                        <v-icon class="icobtn" v-if="props.item.charge" color="blue darken-1" flat @click="print(props.item)" title="打印">print</v-icon>
-                        <v-icon class="icobtn" v-if="props.item.charge" color="blue darken-1" flat @click="updateStage(props.item,0)" title="改状态">replay</v-icon>
-                        <v-icon class="icobtn" v-if="props.item.backWorkList && props.item.charge" color="blue darken-1" flat @click="seleBack(props.item)" title="查看返修">poll</v-icon>
-                    </div>
+                    <td v-if="props.item.workStage == 0" style="min-width:140px;">
+                        <v-icon  v-if="props.item.charge" color="blue darken-1" flat @click="editPlan(props.item)" title="修改"> edit</v-icon>
+                        <v-icon  v-if="props.item.charge" color="blue darken-1" flat @click="print(props.item)" title="打印">print</v-icon>
+                        <v-icon  v-if="props.item.charge" color="blue darken-1" flat @click="updateStage(props.item,1)" title="改状态">replay</v-icon>
+                        <v-icon  v-if="props.item.backWorkList && props.item.charge" color="blue darken-1" flat @click="seleBack(props.item)" title="查看返修">poll</v-icon>
+                    </td>
+                    <td v-else>
+                        <v-icon   v-if="props.item.charge" color="blue darken-1" flat @click="editPlan(props.item)" title="修改"> edit</v-icon>
+                        <v-icon  v-if="props.item.charge" color="blue darken-1" flat @click="print(props.item)" title="打印">print</v-icon>
+                        <v-icon  v-if="props.item.charge" color="blue darken-1" flat @click="updateStage(props.item,0)" title="改状态">replay</v-icon>
+                        <v-icon  v-if="props.item.backWorkList && props.item.charge" color="blue darken-1" flat @click="seleBack(props.item)" title="查看返修">poll</v-icon>
+                    </td>
                 </template>
             </v-data-table>
             <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="snackbarTimeout" top>
@@ -93,6 +84,8 @@
 
 <script>
     import store from '@/store.js'
+    import moment from 'moment'
+
     export default {
         data: ()=>({
             NoteDialog:false,
@@ -397,6 +390,9 @@
             }
         },
         mounted(){
+            this.startDate =  moment(new Date(new Date().getFullYear(), new Date().getMonth() -1 , 1)).format('YYYY-MM-DD');
+            this.endDate =  moment(new Date()).format('YYYY-MM-DD');
+            this.chooseDate = [this.startDate ,this.endDate ];
             this.pagination.descending = true
             this.pagination.sortBy = 'id'
             this.pagination.rowsPerPage = 25

@@ -141,6 +141,8 @@
                     }).then(response => {
                         this.items = response.data;
                         this.loading = false;
+                        this.projectSums = 0;
+                        this.outputNumSum = 0;
                         resoleve(response.data)
                         response.data.forEach((item) => {
                             this.projectSums = this.projectSums + item.projectSum;
@@ -171,6 +173,7 @@
                 // 格式日期
                 this.startDate = moment(this.chooseDate3[0]).format('YYYY-MM-DD');
                 this.endDate = moment(this.chooseDate3[1]).format('YYYY-MM-DD');
+                this.chooseDate = [this.startDate ,this.endDate ];
                 this.projectSums=0      //项目总数
                 this.outputNumSum= 0 //总产值
                 // 刷新数据

@@ -18,9 +18,11 @@
                     <td>{{props.item.projectAuthorize}}</td>
                     <td>{{props.item.projectStartTime}}</td>
                     <td>{{props.item.projectStage}}</td>
-                    <v-btn color="blue darken-1" flat @click="editAuthorize(props.item)" title="编辑" class="controllEdit"><v-icon small> edit</v-icon>编辑</v-btn>
-                    <v-btn color="blue darken-1" flat @click="SelectItem(props.item)" title="查看" class="controllSelect"><v-icon small>search</v-icon>查看</v-btn>
-                    <v-btn color="blue darken-1" flat @click="print(props.item)" title="打印" class="controllSelect"><v-icon small>print</v-icon>打印</v-btn>
+                    <td style="min-width: 120px;">
+                        <v-icon color="blue darken-1" flat @click="editAuthorize(props.item)" title="编辑"> edit</v-icon>
+                        <v-icon color="blue darken-1" flat @click="SelectItem(props.item)" title="查看">search</v-icon>
+                        <v-icon color="blue darken-1" flat @click="print(props.item)" title="打印">print</v-icon>
+                    </td>
                 </template>
             </v-data-table>
         </v-card>
@@ -29,6 +31,8 @@
 
 <script>
     import store from '@/store.js'
+    import moment from 'moment'
+
     export default {
         data: ()=>({
             projectNo:'',
@@ -99,6 +103,7 @@
                         }
                     }).then(response=>{
                         this.projects = response.data.data
+                        this.totalProjects = response.data.total
                         this.loading = false
                         resoleve(response.data)
                     }).catch(error=>{
@@ -133,6 +138,9 @@
             },
         },
         mounted(){
+            this.startDate =  moment(new Date(new Date().getFullYear(), new Date().getMonth() -1 , 1)).format('YYYY-MM-DD');
+            this.endDate =  moment(new Date()).format('YYYY-MM-DD');
+            this.chooseDate = [this.startDate ,this.endDate ]
             this.pagination.descending = true
             this.pagination.sortBy = 'id'
             this.pagination.rowsPerPage = 25
@@ -158,7 +166,7 @@
                     this.getProjectsFromApi()
                         .then(success =>{
                             this.projects = success.data
-                            this.total = success.data
+                            this.totalProjects = success.total
                         }).catch(error =>{
 
                     })
