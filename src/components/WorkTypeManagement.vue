@@ -71,11 +71,7 @@
                 <td>{{props.item.typeName}}</td>
                 <td>{{props.item.typeUnit}}</td>
                 <td>{{props.item.typeOut}}</td>
-                <td>
-                    <template slot="props.item.ptypeList" slot-scope="scope">
-                        <span>{{scope.item.ptypeName}}</span>
-                    </template>
-                </td>
+                <td>{{props.item.ptypeName}}</td>
                 <td>
                     <v-btn color="blue darken-1" flat class="typeBtn" @click="editTypeDialogData(props.item)"><v-icon small>edit</v-icon>编辑</v-btn>
                     <v-btn color="error" flat @click="deleteType(props.item)"><v-icon color="error" small>delete</v-icon>删除</v-btn>
@@ -140,6 +136,16 @@ export default {
                         Authorization: "Bearer " + sessionStorage.getItem('token')
                     }
                 }).then(response =>{
+                    this.types = response.data.data;
+                    for(let type of this.types){
+                        type.ptypeName = ""
+                        type.ptypeIdList = [];
+                        for(let ptype of type.ptypeList){
+                            type.ptypeName += ptype.ptypeName + ",";
+                            type.ptypeIdList.push(ptype.ptypeId)
+                        }
+                    }
+                    this.totalTypes = response.data.total
                     this.loading = false
                     resolve(response.data)
                 }).catch(error =>{
@@ -171,7 +177,8 @@ export default {
                     data:{
                         typeName:this.type.name,
                         typeUnit:this.type.unit,
-                        typeOutput:this.type.output
+                        typeOutput:this.type.output,
+                        ptypeIdList: this.value1
                     }
                 }).then(response =>{
                     this.getTypesFromApi()
@@ -205,7 +212,8 @@ export default {
                     data:{
                         typeName: this.type.name,
                         typeUnit: this.type.unit,
-                        typeOutput: this.type.output
+                        typeOutput: this.type.output,
+                        ptypeIdList: this.value1
                     }
                 }).then(response =>{
                     this.type.id = '',
@@ -219,7 +227,7 @@ export default {
                     this.getTypesFromApi()
                     .then(data => {
                         this.types = data.data
-                        totalTypes = data.total
+                        this.totalTypes = data.total
                     })
                 }).catch(error =>{
                         this.snackbar = false,
@@ -238,7 +246,8 @@ export default {
                 this.type.id = item.id
                 this.type.name = item.typeName
                 this.type.unit = item.typeUnit
-                this.type.output = item.typeOutput
+                this.type.output = item.typeOutput;
+                this.value1 = item.ptypeIdList;
                 this.editTypeDialog = true
             }
         },
@@ -316,8 +325,10 @@ export default {
                     this.types = data.data;
                     for(let type of this.types){
                         type.ptypeName = ""
+                        type.ptypeIdList = [];
                         for(let ptype of type.ptypeList){
                             type.ptypeName += ptype.ptypeName + ",";
+                            type.ptypeIdList.push(ptype.ptypeId)
                         }
                     }
                     this.totalTypes = data.total

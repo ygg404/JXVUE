@@ -33,6 +33,16 @@
             <div class="workload_c">项目产值:     {{allOutput()}}</div>
         </v-card>
     <!-- </v-layout> -->
+    <v-layout wrap style="margin-top: 20px;">
+      <v-flex md12>
+        <v-menu v-model="dateEditMenu" :close-on-content-click="false" :nudge-right="40" lazy transition="scale-transition" offset-y full-width min-width="290px">
+          <template v-slot:activator="{ on }">
+            <v-text-field v-model="cutOffTime" label="结算时间:" :rules="noteRules" prepend-icon="event" readonly v-on="on" style="width: 180px;" ></v-text-field>
+          </template>
+          <v-date-picker v-model="cutOffTime" @input="dateEditMenu = false" type="month" locale="zh-cn"></v-date-picker>
+        </v-menu>
+      </v-flex>
+    </v-layout>
 
     <div class="content-container">
       <div class="left-data">
@@ -108,6 +118,7 @@
 </template>
 <script>
 import store from "@/store.js";
+import moment from 'moment'
 import { types } from "util";
 export default {
   data: () => ({
@@ -170,7 +181,9 @@ export default {
     ],
     // 左侧框数据
     leftData: [], // 数据
-    lefeIndex: 0 // 显示索引
+    lefeIndex: 0, // 显示索引
+    cutOffTime: '', //结算时间
+      dateEditMenu:false
   }),
   methods: {
     getProjectGroup() {
@@ -192,6 +205,52 @@ export default {
           .catch(error => {});
       });
     },
+
+    //获取项目结算时间
+      getCutOffTime(){
+          return new Promise((resolve, reject) => {
+              this.projectNo = this.$route.query.p_no;
+              axios({
+                  method: "GET",
+                  url: "projectData/",
+                  headers: {
+                      Authorization: "Bearer " + sessionStorage.getItem("token")
+                  },
+                  params: {
+                      projectNo: this.projectNo
+                  }
+              })
+                  .then(success => {
+                      //this.projectGroup = success.data;
+                      this.cutOffTime = success.data.cutOffTime == null? '':moment(new Date(success.data.cutOffTime)).format("YYYY-MM")
+                  })
+                  .catch(error => {});
+          });
+    } ,
+    //提交项目结算时间至API
+      postCutoffTimeToApi(){
+          return new Promise((resolve, reject) => {
+              this.projectNo = this.$route.query.p_no;
+              axios({
+                  method: "post",
+                  url: "projectQuality/editcutofftime/",
+                  headers: {
+                      Authorization: "Bearer " + sessionStorage.getItem("token")
+                  },
+                  data: {
+                      projectNo: this.projectNo,
+                      cutOffTime: this.cutOffTime + '-01'
+                  }
+              })
+                  .then(success => {
+                      //this.projectGroup = success.data;
+
+                  })
+                  .catch(error => {});
+          });
+
+      },
+
     getOutPutData() {
       return new Promise((resolve, reject) => {
         this.projectNo = this.$route.query.p_no;
@@ -276,7 +335,9 @@ export default {
               this.putToAuthorize()
                 .then(success => {})
                 .catch(error => {});
+              this.postCutoffTimeToApi();
             } else {
+                this.postCutoffTimeToApi();
               this.snackbarColor = "success";
               this.snackbarText = "保存成功";
               this.snackbar = true;
@@ -442,6 +503,7 @@ export default {
     this.getProjectGroup()
       .then(success => {})
       .catch(error => {});
+    this.getCutOffTime();
   }
 };
 </script>
@@ -451,7 +513,6 @@ export default {
 }
 .left-data {
   width: 320px;
-  margin-top: 24px;
   padding: 5px;
   margin-right: 20px;
   overflow: auto;

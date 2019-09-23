@@ -68,6 +68,8 @@
 
 <script>
     import store from '@/store.js'
+    import moment from 'moment'
+
     export default {
         data: ()=>({
             projectNo:'',
@@ -145,7 +147,8 @@
                             Authorization: 'Bearer ' + sessionStorage.getItem("token")
                         }
                     }).then(response=>{
-                        this.projects = response.data.data
+                        this.projects = response.data.data;
+                        this.totalProjects = response.data.total;
                         this.loading = false
                         resolve(response.data)
                     }).catch(error=>{
@@ -256,6 +259,10 @@
                 this.$router.push({name:'printproject',query:{'p_no':item.projectNo,'type_id':3}});
             }
         },mounted(){
+            this.startDate =  moment(new Date(new Date().getFullYear(), new Date().getMonth() -1 , 1)).format('YYYY-MM-DD');
+            this.endDate =  moment(new Date()).format('YYYY-MM-DD');
+            this.chooseDate = [this.startDate ,this.endDate ];
+
             this.pagination.descending = true
             this.pagination.sortBy = 'id'
             this.pagination.rowsPerPage = 25
@@ -274,7 +281,7 @@
                     this.getProjectsFromApi()
                         .then(success =>{
                             this.projects = success.data
-                            this.total = success.data
+                            this.totalProjects = success.total
                         }).catch(error =>{
 
                     })

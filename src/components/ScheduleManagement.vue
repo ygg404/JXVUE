@@ -31,9 +31,9 @@
                     <v-container>
                         <v-menu v-model="addDateMenu" :close-on-content-click="false" :nudge-right="40" lazy transition="scale-transition" offset-y full-width min-width="290px">
                             <template v-slot:activator="{ on }">
-                                <v-text-field v-model="scheduleDetail.qFinishDateTime" label="签订时间:" prepend-icon="event" readonly  v-on="on"></v-text-field>
+                                <v-text-field v-model="scheduleDetail.cDateTimeYM" label="结算时间:" prepend-icon="event" readonly  v-on="on"></v-text-field>
                             </template>
-                            <v-date-picker v-model="scheduleDetail.qFinishDateTime" @input="addDateMenu = false"></v-date-picker>
+                            <v-date-picker v-model="scheduleDetail.cDateTimeYM" type="month" locale="zh-cn" @input="addDateMenu = false"></v-date-picker>
                         </v-menu>
                     </v-container>
                 </v-card-text>
@@ -107,7 +107,7 @@
                     <td>{{props.item.projectWorkDate}}</td>
                     <td>{{props.item.wOutTime}}</td>
                     <td>{{props.item.qOutTime}}</td>
-                    <td>{{props.item.qFinishDateTimeYM}}</td>
+                    <td>{{props.item.cDateTimeYM}}</td>
                     <!-- <v-btn color="blue darken-1" flat @click="showTimeApm(props.item)" title="查看" class="controllEdit">
                         <v-icon small>search</v-icon>查看
                     </v-btn> -->
@@ -333,7 +333,7 @@
                             myDate = moment(myDate).format('YYYY-MM-DD')//获取当前时间
                             item.time = this.DateDiff(myDate, item.time);
                             item.projectBegunDate = moment(new Date(item.projectBegunDate)).format('YYYY-MM-DD')
-                            item.qFinishDateTimeYM = item.qFinishDateTime==null?'':moment(new Date(item.qFinishDateTime)).format('YYYY-MM')
+                            item.cDateTimeYM = item.cDateTime==null?'':moment(new Date(item.cDateTime)).format('YYYY-MM')
                             item.qFinishDateTime = item.qFinishDateTime==null?'':moment(new Date(item.qFinishDateTime)).format('YYYY-MM-DD')
                         });
                         this.projects = response.data.data;
@@ -397,13 +397,13 @@
                 return new Promise((resolve, reject) => {
                     axios({
                         method: 'POST',
-                        url: '/projectQuality/changetime/',
+                        url: '/projectQuality/editcutofftime/',
                         headers: {
                             Authorization: 'Bearer ' + sessionStorage.getItem("token")
                         },
                         data: {
                             projectNo: this.scheduleDetail.projectNo,
-                            finishDateTime:this.scheduleDetail.qFinishDateTime
+                            cutOffTime:this.scheduleDetail.cDateTimeYM + '-01'
                         },
                     }).then(response => {
                         resolve(response.data)
@@ -430,6 +430,10 @@
             }
         },
         mounted() {
+            this.startDate =  moment(new Date(new Date().getFullYear(), new Date().getMonth() -1 , 1)).format('YYYY-MM-DD');
+            this.endDate =  moment(new Date()).format('YYYY-MM-DD');
+            this.chooseDate = [this.startDate ,this.endDate ];
+
             this.pagination.descending = true
             this.pagination.sortBy = 'contractNo'
             this.pagination.rowsPerPage = 25

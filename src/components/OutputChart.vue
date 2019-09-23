@@ -140,11 +140,15 @@
                         }
                     }).then(response => {
                         this.items = response.data;
+                        for(let item of response.data.data){
+                            item.finishDateTime = item.finishDateTime.substring(1,10);
+                        }
                         this.loading = false;
                         this.projectSums = 0;
                         this.outputNumSum = 0;
                         resoleve(response.data)
                         response.data.forEach((item) => {
+
                             this.projectSums = this.projectSums + item.projectSum;
                             this.outputNumSum = this.outputNumSum + item.outPutNum;
                         })
