@@ -13,7 +13,7 @@
                 <template slot="items" slot-scope="props">
                     <td>{{props.item.contractNo}}</td>
                     <td>{{props.item.projectName}}</td>
-                     <td>{{props.item.projectStartTime}}</td>
+                    <td>{{props.item.projectStartTime}}</td>
                     <td>{{props.item.workName}}</td>
                     <td>{{props.item.projectOutPut}}</td>
                     <td>{{props.item.projectActuallyOutput}}</td>
@@ -25,6 +25,7 @@
 
 <script>
     import store from '@/store.js'
+    import moment from 'moment'
     export default {
         data: ()=>({
             userGroup:'',
@@ -53,6 +54,7 @@
             useraccount:'',
             permissions:JSON.parse(localStorage.getItem('permissions'))
         }),
+
         methods:{
             getProjectsFromApi(){
                 this.userGroup = sessionStorage.getItem("userGroup")
@@ -91,7 +93,10 @@
                         }
                     }).then(response=>{
                         this.projects = response.data.data
-                        // this.totalProjects = response.data.total
+
+                        this.projects.forEach((item)=>{
+                            item.projectStartTime = item.projectStartTime.substring(0,10);
+                        });
                         console.log(this.projects)
                         resoleve(response.data)
                     }).catch(error=>{
@@ -120,11 +125,12 @@
             this.pagination.descending = true
             this.pagination.sortBy = 'id'
             this.pagination.rowsPerPage = 25
-                this.getProjectsFromApi()
-                    .then(success =>{
-                        this.projects = success.data
-                        this.totalProjects = success.total
-                    }).catch(error=>{}),
+            this.getProjectsFromApi()
+                .then(success =>{
+
+                    this.projects = success.data
+                    this.totalProjects = success.total
+                }).catch(error=>{}),
                 this.getTypeFromApi()
                     .then(response =>{
                         this.types = response
