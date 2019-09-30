@@ -18,33 +18,35 @@
                     <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
                         <template slot="items" slot-scope="props" v-if="props.item.workGroupList.length > 0">
                             <tr>
-                                <td colspan="5"><b>{{props.item.gName}}</b></td>
+                                <td colspan="6"><b>{{props.item.gName}}</b></td>
                             </tr>
                             <tr v-for="w in props.item.workGroupList" :key="w.id">
-                                <td>{{w.projectName}}</td>
-                                <td>{{w.quality_score}}</td>
+                                <td >{{w.projectName}}</td>
+                                <td >{{w.quality_score}}</td>
                                 <td>{{w.quality_level}}</td>
                                 <td>{{w.userName}}</td>
-                                <td>{{w.qUserName}}</td>
-                                <td>{{w.cUserName}}</td>
+                                <td  style="min-width: 120px;">{{w.qUserName}}</td>
+                                <td style="min-width: 120px;">{{w.cUserName}}</td>
                             </tr>
                             <tr>
                                 <td><b>{{props.item.gName}}合计</b></td>
-                                <td></td>
-                                <td colspan="2"><b>优：{{props.item.excellent}}项；
+
+                                <td colspan="5"><b>优：{{props.item.excellent}}项；
                                     良：{{props.item.good}}项；合格：{{props.item.qualified}}项；
                                     优良项目个数：{{props.item.excellent_number}}；项目总数：
                                     {{props.item.projectSum}}；优良率：{{props.item.excellent_rate}}</b></td>
                             </tr>
-                        </template>
-                        <template v-slot:footer>
-                            <td><b>质量合计</b></td>
-                            <td></td>
-                            <td><b>优：{{excellentSum}}项；
+                            <tr v-if="props.item.showFooter">
+                                <td><b>质量合计</b></td>
+                                <td colspan="5"><b>优：{{excellentSum}}项；
                                 良：{{goodSum}}项；合格：{{qualifiedSum}}项；
                                 优良项目个数：{{excellentumberSum}}；项目总数：
                                 {{projectSum}}；优良率：{{excellentRateSum}}%</b></td>
+                            </tr>
                         </template>
+                        <!--<template v-slot:footer>-->
+
+                        <!--</template>-->
                     </v-data-table>
                 </div>
                 <div v-else>
@@ -141,6 +143,13 @@
                             this.qualifiedSum = this.qualifiedSum + item.qualified;
                             this.excellentumberSum = this.excellentumberSum + item.excellent_number;
                             this.projectSum = this.projectSum + item.projectSum;
+                            if(item.projectSum > 0){
+                                response.data.forEach((tem) => {
+                                    if(tem.gName == item.gName){
+                                        tem.showFooter = true;
+                                    }else{tem.showFooter = false;}
+                                });
+                            }
                         })
                         if(this.projectSum > 0 ){
                             this.excellentRateSum = this.excellentumberSum/this.projectSum*100;
@@ -274,4 +283,6 @@
     .mb-2 {
         margin-top: 20px!important;
     }
+
+
 </style>

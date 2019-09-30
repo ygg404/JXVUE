@@ -22,7 +22,7 @@
                     <td>{{props.item.contractAddTime}}</td>
                     <v-btn color="blue darken-1" flat @click="editContractDialogData(props.item)" title="修改" class="controllEdit"><v-icon small> edit</v-icon>编辑</v-btn>
                     <v-btn color="error" flat @click="deleteItem(props.item)" title="删除" class="controllDelete"><v-icon color="error" small>delete</v-icon>删除</v-btn>
-                    <v-btn v-if="props.item.fileName" color="blue darken-1" flat @click="downloadFile(props.item)" title="下载附件" ><v-icon color="success" small>cloud_download</v-icon></v-btn>
+                    <v-btn v-if="props.item.fileName" color="blue darken-1" flat @click="downloadFile(props.item)" title="下载附件" ><v-icon color="success" small>cloud_download</v-icon>下载</v-btn>
                 </template>
             </v-data-table>
         </v-card>
@@ -37,7 +37,7 @@
                             <v-flex md12>
                                 <v-text-field v-model="contract.contractName" label="合同名称:" :rules="noteRules" prepend-icon="calendar_today"></v-text-field>
                                 <v-text-field v-model="contract.contractNo" label="合同编号:" :rules="noteRules" prepend-icon="book" disabled></v-text-field>
-                                <v-select v-model="contract.projectType" label="项目类型:" :rules="noteRules" :items="types" item-text="name" item-value="name" prepend-icon="storage"></v-select>
+                                <v-select v-model="contract.projectType" label="项目类型:" :rules="noteRules" :items="types" item-text="name" item-value="name" prepend-icon="storage" multiple></v-select>
                                 <v-text-field v-model="contract.contractMoney" label="合同金额:" :rules="noteRules" prepend-icon="monetization_on" type="number"></v-text-field>
                                 <v-radio-group v-model="contract.typeId" :rules="noteRules" row>
                                     <v-radio label="合同委托" value="0"></v-radio>
@@ -91,7 +91,7 @@
                             <v-flex md12>
                                 <v-text-field v-model="contract.contractName" label="合同名称:" :rules="noteRules" prepend-icon="calendar_today"></v-text-field>
                                 <v-text-field v-model="contract.contractNo" label="合同编号:" :rules="noteRules" prepend-icon="book" disabled></v-text-field>
-                                <v-select v-model="contract.projectType" label="项目类型:" :rules="noteRules" :items="types" item-text="name" item-value="name" prepend-icon="storage"></v-select>
+                                <v-select v-model="contract.projectType" label="项目类型:" :rules="noteRules" :items="types" item-text="name" item-value="name" prepend-icon="storage" multiple></v-select>
                                 <v-text-field v-model="contract.contractMoney" label="合同金额:" :rules="noteRules" prepend-icon="monetization_on" type="number"></v-text-field>
                                 <v-radio-group v-model="contract.typeId" row >
                                     <v-radio label="合同委托" value="0"></v-radio>
@@ -281,6 +281,11 @@
                         this.snackbarText = '有必填项为空，请重新检查'
                         return false
                     }
+                    let projectType = '';
+                    for(let type of this.contract.projectType){
+                        projectType += type + ','
+                    }
+                    projectType=projectType.substring(0,projectType.length-1);
                     axios({
                         method:'POST',
                         url:'contract/',
@@ -289,7 +294,7 @@
                             contractAddTime: this.contract.contractAddTime,
                             typeId: this.contract.typeId,
                             contractAuthorize: this.contract.contractAuthorize,
-                            projectType:this.contract.projectType,
+                            projectType:projectType,
                             contractName: this.contract.contractName,
                             contractMoney: this.contract.contractMoney,
                             contractNote:this.contract.contractNote,
@@ -361,6 +366,11 @@
                 link.click()
             },
             editContractToApi(){
+                let ptype = '';
+                for(let type of this.contract.projectType){
+                     ptype += type + ','
+                }
+                ptype = ptype.substring(0,ptype.length-1);
                 return new Promise((resolve,reject) =>{
                     axios({
                         method:'POST',
@@ -374,7 +384,7 @@
                             contractMoney: this.contract.contractMoney,
                             contractNote:this.contract.contractNote,
                             contractBusiness:this.contract.contractBusiness,
-                            projectType:this.contract.projectType,
+                            projectType:ptype,
                             contractUserName:this.contract.contractUserName,
                             contractUserPhone:this.contract.contractUserPhone
                         },
@@ -405,13 +415,19 @@
                 })
             },
             editContractDialogData(item){
+                this.contract.projectType = [];
+                let typelist = item.projectType.split(',');
+                for(let type of typelist){
+                    if(type != '' && type != null)this.contract.projectType.push(type);
+                }
+
                 this.contract.contractNo = item.contractNo
                 this.contract.contractAddTime = item.contractAddTime
                 this.contract.typeId = item.typeId + ''
                 this.contract.contractAuthorize = item.contractAuthorize
                 this.contract.contractName = item.contractName
                 this.contract.contractNote = item.contractNote
-                this.contract.projectType = item.projectType
+                // this.contract.projectType = item.projectType
                 this.contract.contractMoney =item.contractMoney
                 this.contract.contractBusiness=item.contractBusiness
                 this.contract.contractUserName=item.contractUserName

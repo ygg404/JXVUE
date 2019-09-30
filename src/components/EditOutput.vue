@@ -37,7 +37,7 @@
       <v-flex md12>
         <v-menu v-model="dateEditMenu" :close-on-content-click="false" :nudge-right="40" lazy transition="scale-transition" offset-y full-width min-width="290px">
           <template v-slot:activator="{ on }">
-            <v-text-field v-model="cutOffTime" label="结算时间:" :rules="noteRules" prepend-icon="event" readonly v-on="on" style="width: 180px;" ></v-text-field>
+            <v-text-field v-model="cutOffTime" label="结算时间:" prepend-icon="event" readonly v-on="on" style="width: 180px;" ></v-text-field>
           </template>
           <v-date-picker v-model="cutOffTime" @input="dateEditMenu = false" type="month" locale="zh-cn"></v-date-picker>
         </v-menu>
@@ -53,7 +53,8 @@
           v-show="types.listIndex === lefeIndex"
           class="shrink mr-2"
           v-model="types.check"
-          style="width: 90%;word-wrap: break-word;word-break: break-all;"
+          v-if="types.isshow"
+          style= "width: 90%;word-wrap: break-word;word-break: break-all;"
         ></el-checkbox>
       </div>
       <!-- <div> -->
@@ -183,7 +184,8 @@ export default {
     leftData: [], // 数据
     lefeIndex: 0, // 显示索引
     cutOffTime: '', //结算时间
-      dateEditMenu:false
+      dateEditMenu:false,
+      workIdList: []
   }),
   methods: {
     getProjectGroup() {
@@ -304,7 +306,19 @@ export default {
             success.data.groupList.forEach((e, index) => {
               e.outPutWraps.forEach(ele => {
                 ele.listIndex = index;
+                if(this.workIdList.indexOf(ele.id) >=0){
+                    ele.isshow = true;
+                }else{
+                    ele.isshow = false;
+                }
               });
+              // let outputTemp= [];
+              // for(let i=0; i< e.outPutWraps.length ; i ++ ){
+              //     if(e.outPutWraps[i].isshow){
+              //         outputTemp.push(e.outPutWraps[i])
+              //     }
+              // }
+
               this.leftData = this.leftData.concat(e.outPutWraps);
             });
             this.outputList = success.data.groupList;
@@ -429,7 +443,7 @@ export default {
                     count += output;
                 }
             });
-           
+
         })
         return allCount += count
     },
@@ -466,6 +480,23 @@ export default {
         });
       });
     },
+    //获取项目作业类型ID
+    getWorkIdListfromApi(){
+        this.projectNo = this.$route.query.p_no;
+        return new Promise((resolve, reject) => {
+                axios({
+                    method: "GET",
+                    url: "workType/getWtypeIdListByNo/" + this.projectNo  + '/',
+                    headers: {
+                        Authorization: "Bearer " + sessionStorage.getItem("token")
+                    }
+                }).then(success => {
+                    this.workIdList = success.data;
+                    resolve(success.data);
+                })
+        });
+    },
+
     ToAuthorize() {
         console.log(this.output.projectStage);
         if(this.output.projectStage != '产值核算'){
@@ -478,7 +509,8 @@ export default {
       this.addOutPut()
         .then(success => {})
         .catch(error => {});
-    }
+    },
+
   },
   computed: {
     countOut() {
@@ -492,11 +524,17 @@ export default {
       return this.numFilter(count);
     }
   },
-  created() {},
+  created() {
+
+  },
   mounted() {
-    this.getOutPutData()
-      .then(success => {})
-      .catch(error => {});
+      this.getWorkIdListfromApi().then(success=>{
+          this.getOutPutData()
+              .then(success => {})
+              .catch(error => {});
+      });
+
+
     this.getTypeData()
       .then(success => {})
       .catch(error => {});
@@ -504,6 +542,7 @@ export default {
       .then(success => {})
       .catch(error => {});
     this.getCutOffTime();
+
   }
 };
 </script>

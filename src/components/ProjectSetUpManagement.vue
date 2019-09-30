@@ -43,7 +43,7 @@
 
             <v-dialog max-width="500px" v-model="editProjectDialog" persistent>
                 <v-card>
-                    <v-card-title><span class="title">查看所有项目</span>
+                    <v-card-title><span class="title">查看项目</span>
                         <v-layout justify-end>
                             <v-flex xs4 >
                                 <v-select label="生产负责人" v-model="project.project_produce" :items="projectCharges" item-text="userName" item-value="userName" disabled></v-select>
@@ -55,7 +55,7 @@
                             <v-layout wrap>
                                 <v-flex md12>
                                     <v-text-field v-model="project.project_name" label="项目名称:" prepend-icon="calendar_today" disabled></v-text-field>
-                                    <v-select v-model="project.project_type" label="项目类型:" :items="types" item-text="name" item-value="name" prepend-icon="book" disabled></v-select>
+                                    <v-text-field v-model="project.project_type" label="项目类型:" :items="types" item-text="name" item-value="name" prepend-icon="book" disabled></v-text-field>
                                     <v-text-field v-model="project.project_no" label="项目编号:" prepend-icon="settings_ethernet" disabled></v-text-field>
                                     <v-text-field v-model="project.project_authorize" label="委托单位:" prepend-icon="nature" disabled></v-text-field>
                                     <v-text-field v-model="project.user_name" label="联系人姓名:" prepend-icon="how_to_reg" disabled></v-text-field>
@@ -263,7 +263,7 @@
             },
             addProject(){
                 this.getContractName().then(response=>{
-                    
+
                 }).catch(error=>{})
                 this.addProjectDialog = true
             },

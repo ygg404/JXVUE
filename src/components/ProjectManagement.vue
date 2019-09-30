@@ -172,7 +172,7 @@
                     })
                 })
             },
-           
+
             editProjectToApi(){
                 return new Promise((resolve,reject) =>{
                     if(this.project.projectStages == ""){
@@ -227,6 +227,7 @@
                     this.snackbar = true
                     return false
                 }else{
+
                     this.project.projectNo = item.projectNo
                     this.project.projectName = item.projectName
                     this.project.projectType = item.projectType
@@ -248,7 +249,7 @@
                         resolve(success.data)
                         this.stages = success.data
                     }).catch(error=>{
-                        
+
                     })
                 })
             },

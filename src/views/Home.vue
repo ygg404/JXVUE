@@ -550,4 +550,8 @@ export default {
 ::-webkit-scrollbar-thumb:hover {
   background: #b0bec5;
 }
+
+table.v-table tbody td{
+    height: 35px;
+}
 </style>

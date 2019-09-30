@@ -36,11 +36,11 @@
                     <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
                         <template slot="items" slot-scope="props" v-if="props.item.planRateList.length > 0">
                             <tr>
-                                <td colspan="4"><b>{{props.item.gName}}</b></td>
+                                <td colspan="5"><b>{{props.item.gName}}</b></td>
                             </tr>
                             <tr v-for="pr in props.item.planRateList" :key="pr.id">
                                 <td>{{pr.projectName}}</td>
-                                <td>{{pr.projectType}}</td>
+                                <td>{{pr.startDateTime.replace(' 00:00:00' , '')}}</td>
                                 <td>{{pr.finishDateTime.replace(' 00:00:00' , '')}}</td>
                                 <td>{{pr.outputNum.toFixed(2)}}</td>
                             </tr>
@@ -50,12 +50,12 @@
                                 <td></td>
                                 <td><b>{{props.item.outPutNum.toFixed(2)}}</b></td>
                             </tr>
-                        </template>
-                        <template v-slot:footer>
-                            <td><b>总合计{{projectSums}}个项目</b></td>
-                            <td></td>
-                            <td></td>
-                            <td><b>{{outputNumSum.toFixed(2)}}</b></td>
+                            <tr v-if="props.item.showFooter">
+                                <td><b>总合计{{projectSums}}个项目</b></td>
+                                <td></td>
+                                <td></td>
+                                <td><b>{{outputNumSum.toFixed(2)}}</b></td>
+                            </tr>
                         </template>
                     </v-data-table>
                 </div>
@@ -63,11 +63,11 @@
                     <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
                         <template slot="items" slot-scope="props"  v-if="props.item.planRateList.length > 0">
                             <tr>
-                                <td colspan="4"><b>{{props.item.gName}}</b></td>
+                                <td colspan="5"><b>{{props.item.gName}}</b></td>
                             </tr>
                             <tr v-for="pr in props.item.planRateList" :key="pr.id">
                                 <td>{{pr.projectName}}</td>
-                                <td>{{pr.projectType}}</td>
+                                <td>{{pr.startDateTime.replace(' 00:00:00' , '')}}</td>
                                 <td>{{pr.finishDateTime}}</td>
                                 <td>{{pr.outputNum.toFixed(2)}}</td>
                             </tr>
@@ -100,7 +100,7 @@
                 workIds: [],
                 headers: [
                     {text: '项目名称', value: 'projectName'},
-                    {text: '项目类型', value: 'projectType'},
+                    {text: '启动时间', value: 'startDateTime'},
                     {text: '完成时间', value: 'finishDateTime'},
                     {text: '产值', value: 'outputNum'}
                 ],
@@ -109,7 +109,7 @@
                 projectSums:0, //总项目数
                 outputNumSum: 0, //总产值
                 aa:[],
-                tabTitle:''//列表标题
+                tabTitle:'',//列表标题
             }
         },
         methods: {
@@ -139,19 +139,26 @@
                             Authorization: 'Bearer ' + sessionStorage.getItem("token")
                         }
                     }).then(response => {
-                        this.items = response.data;
-                        for(let item of response.data.data){
-                            item.finishDateTime = item.finishDateTime.substring(1,10);
-                        }
+
+
                         this.loading = false;
                         this.projectSums = 0;
                         this.outputNumSum = 0;
-                        resoleve(response.data)
-                        response.data.forEach((item) => {
 
+                        response.data.forEach((item) => {
+                            if(item.projectSum > 0){
+                                response.data.forEach((tem) => {
+                                    if(tem.gName == item.gName){
+                                        tem.showFooter = true;
+                                    }else {tem.showFooter = false;}
+                                });
+                            }
                             this.projectSums = this.projectSums + item.projectSum;
                             this.outputNumSum = this.outputNumSum + item.outPutNum;
-                        })
+                        });
+                        this.items = response.data;
+                        resoleve(response.data)
+
                     }).catch(error => {
                         this.loading = false;
                         reject(error.response.data)

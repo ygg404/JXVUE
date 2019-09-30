@@ -15,7 +15,7 @@ let config = {
   baseURL:'http://localhost:8002/jx/api/',
   //   baseURL:'http://193.112.32.233:8002/jx/api/',
   // baseURL:'https://web.gdjxch.cn/jx/api/',
-  timeout:10000,
+  timeout:20000,
   headers:{'Content-type' : 'application/json;charset=utf-8'}
 };
 
