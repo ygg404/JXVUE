@@ -18,11 +18,11 @@
                     <td>{{props.item.contractNo}}</td>
                     <td>{{props.item.contractName}}</td>
                     <td>{{props.item.contractAuthorize}}</td>
-                    <td>{{props.item.typeId == 0 ? "合同委托" : "一般合同"}}</td>
-                    <td>{{props.item.contractAddTime}}</td>
-                    <v-btn color="blue darken-1" flat @click="editContractDialogData(props.item)" title="修改" class="controllEdit"><v-icon small> edit</v-icon>编辑</v-btn>
-                    <v-btn color="error" flat @click="deleteItem(props.item)" title="删除" class="controllDelete"><v-icon color="error" small>delete</v-icon>删除</v-btn>
-                    <v-btn v-if="props.item.fileName" color="blue darken-1" flat @click="downloadFile(props.item)" title="下载附件" ><v-icon color="success" small>cloud_download</v-icon>下载</v-btn>
+                    <td style="min-width: 80px;">{{props.item.typeId == 0 ? "合同委托" : "一般合同"}}</td>
+                    <td style="min-width: 100px;">{{props.item.contractAddTime}}</td>
+                    <v-btn color="blue darken-1" flat @click="editContractDialogData(props.item)" title="修改" class="controllEdit" style="height: 22px;"><v-icon small> edit</v-icon>编辑</v-btn>
+                    <v-btn color="error" flat @click="deleteItem(props.item)" title="删除" class="controllDelete" style="height: 22px;"><v-icon color="error" small>delete</v-icon>删除</v-btn>
+                    <v-btn v-if="props.item.fileName" color="blue darken-1" flat @click="downloadFile(props.item)" title="下载附件" style="height: 22px;" ><v-icon color="success" small>cloud_download</v-icon>下载</v-btn>
                 </template>
             </v-data-table>
         </v-card>

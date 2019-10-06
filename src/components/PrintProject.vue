@@ -3,10 +3,11 @@
         <div align="center" class="print">
             <p class="MsoNormal" align="center" style="text-align:center"><span style="font-size:16.0pt;font-family:黑体">测绘任务书及流程记录表</span></p>
             <div align="center">
-            <table class="MsoNormalTable" border="1" cellspacing="0" cellpadding="0" style="border-collapse:collapse;border:none">
-                <tbody><tr height="0">
-                    <td width="84" style="width:80.0pt;border:none"></td>
-                    <td width="84" style="width:80.0pt;border:none"></td>
+            <table class="MsoNormalTable" border="1" cellspacing="0" cellpadding="0" style="border-collapse:collapse;border:none;margin-right: 10px;" >
+                <tbody >
+                <tr height="0">
+                    <td width="80" style="width:80.0pt;border:none"></td>
+                    <td width="80" style="width:80.0pt;border:none"></td>
                     <td width="50" style="width:50.0pt;border:none"></td>
                     <td width="50" style="width:50.0pt;border:none"></td>
                     <td width="50" style="width:50.0pt;border:none"></td>
@@ -15,7 +16,7 @@
                     <td width="50" style="width:50.0pt;border:none"></td>
                     <td width="89" style="width:80.0pt;border:none"></td>
                 </tr>
-                <tr>
+                <tr >
                     <td style="border:solid black 1.0pt;padding:5pt 8pt;">
                         <p class="MsoNormal" align="center" style="text-align:center"><span style="font-size:9.0pt;font-family:黑体">项目名称</span></p>
                     </td>
@@ -142,7 +143,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td style="border:solid black 1.0pt;border-top:none;padding:5pt 8pt;">
+                    <td style="border:solid black 1.0pt;padding:5pt 8pt;">
                         <p class="MsoNormal" align="center" style="text-align:center"><span style="font-size:9.0pt;font-family:黑体">作业部门</span></p>
                     </td>
                     <td colspan="3" style="border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:5pt 8pt;">
@@ -307,6 +308,9 @@
                     window.location.reload()
                 }else if(this.type_id == 3){
                     this.$router.push({path:'/project-management'})
+                    window.location.reload()
+                }else if(this.type_id == 4){
+                    this.$router.push({path:'/schedule-management'})
                     window.location.reload()
                 }
 

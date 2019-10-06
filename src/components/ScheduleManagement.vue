@@ -1,5 +1,29 @@
 <template>
     <v-container fluid>
+        <v-dialog max-width="500px" v-model="editStageDialog" persistent>
+            <v-card>
+                <v-card-title><span class="title">修改项目阶段</span>
+                </v-card-title>
+                <v-card-text>
+                    <v-container>
+                        <v-layout wrap>
+                            <v-flex md12>
+                                <v-text-field v-model="project.projectName" label="项目名称:" :rules="noteRules" prepend-icon="calendar_today" disabled></v-text-field>
+                                <v-text-field v-model="project.projectType" label="项目类型:" :rules="noteRules" prepend-icon="book" disabled></v-text-field>
+                                <v-text-field v-model="project.projectNo" label="项目编码:" :rules="noteRules" prepend-icon="settings_ethernet" disabled></v-text-field>
+                                <v-text-field v-model="project.projectStartDateTime.substring(0,10)" label="项目启动时间:" :rules="noteRules" prepend-icon="settings_ethernet" disabled></v-text-field>
+                                <v-select v-model="project.projectStage" label="项目阶段:" :rules="noteRules" :items="stages" item-text="name" item-value="name" prepend-icon="book"></v-select>
+                            </v-flex>
+                        </v-layout>
+                    </v-container>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" flat @click="editStageDialog = false">取消</v-btn>
+                    <v-btn color="info" @click="editProjectToApi">保存</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
         <v-dialog max-width="500px" v-model="addTimeDialog" persistent>
             <v-card>
                 <v-card-title><span class="title">查看进度详情</span>
@@ -83,7 +107,7 @@
             </v-card>
         </v-dialog>
         <v-card>
-            <v-card-title class="headline">项目进度</v-card-title>
+            <v-card-title class="headline">项目状态</v-card-title>
             <v-card-title>
                 <v-layout row wrap style="display: flex;flex-wrap: wrap">
                     <el-date-picker v-model="chooseDate" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" class="dateType">
@@ -101,19 +125,24 @@
                             <td class="project_name_row">
                                 {{props.item.projectName}}</td>
                     </el-tooltip>
+                    <td>{{props.item.projectCharge}}</td>
+                    <td>{{props.item.projectStage}}</td>
                     <td>{{props.item.projectBegunDate}}</td>
                     <td class="progress_row"> <v-progress-linear v-model="props.item.projectRate" height="20"><strong style="color: white">{{ Math.ceil(props.item.projectRate) }}%</strong>
                     </v-progress-linear></td>
-                    <td>{{props.item.projectWorkDate}}</td>
+                    <td style="max-width: 70px;">{{props.item.projectWorkDate}}</td>
                     <td>{{props.item.wOutTime}}</td>
                     <td>{{props.item.qOutTime}}</td>
                     <td>{{props.item.cDateTimeYM}}</td>
+
                     <!-- <v-btn color="blue darken-1" flat @click="showTimeApm(props.item)" title="查看" class="controllEdit">
                         <v-icon small>search</v-icon>查看
                     </v-btn> -->
 
                     <v-icon color="blue darken-1" style="margin-top: 10px;" @click="getScheuleByNoApi(props.item)" title="查看进度">alarm</v-icon>
                     <v-icon color="blue darken-1" style="margin-top: 10px;" @click="setScheuleTimeByNoApi(props.item)" title="结算月份修改">edit</v-icon>
+                    <v-icon color="blue darken-1" style="margin-top: 10px;" @click="editProjectDialogData(props.item)"  title="修改阶段">event</v-icon>
+                    <v-icon color="blue darken-1"  @click="print(props.item)" title="打印" >print</v-icon>
                 </template>
             </v-data-table>
             <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="snackbarTimeout" top>
@@ -170,6 +199,8 @@
             headers: [
                 {text: '合同编号', value: 'contractNo'},
                 {text: '项目名称', value: 'projectName', sortable: false},
+                {text: '项目负责人', value: 'projectCharge',sortable: false},
+                {text: '项目阶段', value: 'projectStage',sortable: false},
                 {text: '启动时间', value: 'projectBegunDate',sortable: false},
                 {text: '当前进度', value: 'project_rate'},
                 {text: '要求工期', value: 'projectStartTime',sortable: false},
@@ -186,7 +217,18 @@
         ],
             addDateMenu: false,
             //进度详情
+            stages:[],
             scheduleDetail:[],
+            editStageDialog:false,
+            //项目详情
+            project:{
+                projectNo:'',
+                projectName:'',
+                projectType:'',
+                projectStage:'',
+                projectStageId:'',
+                projectStartDateTime: new Date().toISOString().substr(0, 10)
+            },
         }),
         methods: {
             chooseTime() {
@@ -269,6 +311,40 @@
                 this.projectRate = ''
                 this.projectNote = ''
                 this.addScheduleDialog = false
+            },
+            editProjectDialogData:function(item){
+                if(!this.permissions.includes('all_permission') || this.permissions.includes('edit_stage')){
+                    this.snackbarColor = 'error'
+                    this.snackbarText = '无操作权限'
+                    this.snackbar = true
+                    return false
+                }else{
+                    return new Promise((resolve, reject) => {
+                        axios({
+                            methods: 'GET',
+                            url: 'project/setup/',
+                            headers: {
+                                Authorization: 'Bearer ' + sessionStorage.getItem("token")
+                            },
+                            params: {
+                                projectNo : item.projectNo
+                            }
+                        }).then(response => {
+                            this.editStageDialog = true;
+                            this.project = response.data;
+                            resolve(response.data);
+                        }).catch(error => {
+                            reject(error.response)
+                        })
+                    })
+                    // this.project.projectNo = item.projectNo
+                    // this.project.projectName = item.projectName
+                    // this.project.projectType = item.projectType
+                    // this.project.projectStageId = item.projectStageId
+                    // this.project.projectStartDate = item.projectStartTime
+                    // this.project.projectStages = item.projectStage
+
+                }
             },
             // getUserFromApi() {
             //     return new Promise((resolve, reject) => {
@@ -415,18 +491,70 @@
                     })
                 })
             },
-            // chooseUserProject() {
-            //     this.users.forEach(e => {
-            //         if (e.userName == this.chooseUser) {
-            //             this.userAccount = e.userAccount
-            //         }
-            //     })
-            //     this.getProjectsFromApi().then(success => {
-            //     }).catch(error => {
-            //     })
-            // },
+            //获取项目所有阶段
+            getprojectStage(){
+                return new Promise((resolve,reject) =>{
+                    axios({
+                        method:'GET',
+                        url:'stage/',
+                        headers:{
+                            Authorization: "Bearer " + sessionStorage.getItem('token')
+                        }
+                    }).then(success=>{
+                        resolve(success.data)
+                        this.stages = success.data
+                    }).catch(error=>{
+
+                    })
+                })
+            },
+            editProjectToApi(){
+                return new Promise((resolve,reject) =>{
+                    if(this.project.projectStages == ""){
+                        this.snackbar = true
+                        this.snackbarColor = 'error'
+                        this.snackbarText = '有必填项为空，请重新检查'
+                        return false
+                    }
+                    this.stages.forEach(e=>{
+                        if(e.name == this.project.projectStage){
+                            this.project.projectStageId = e.id
+                        }
+                    })
+                    axios({
+                        method:'POST',
+                        url:'project/stage/',
+                        headers:{
+                            Authorization: "Bearer " +sessionStorage.getItem('token')
+                        },
+                        data:{
+                            projectStage: this.project.projectStageId,
+                            projectNo:this.project.projectNo,
+                        }
+                    }).then(response =>{
+
+                        this.editStageDialog = false
+                        this.getProjectsFromApi()
+                            .then(success => {
+                                this.projects = success.data
+                                this.total = success.data
+                            }).catch(error => {
+                        })
+                        this.snackbar = true,
+                            this.snackbarColor = 'success',
+                            this.snackbarText = '更改成功'
+                    }).catch(error =>{
+                        this.snackbar = false,
+                            this.snackbarColor = 'error',
+                            this.snackbarText = error.response.data.message
+                    })
+                })
+            },
             addSchedule(item) {
                 this.$router.push({name: 'editschedule', query: {'p_no': item.projectNo}});
+            },
+            print:function(item){
+                this.$router.push({name:'printproject',query:{'p_no':item.projectNo,'type_id':4}});
             }
         },
         mounted() {
@@ -453,7 +581,8 @@
                     this.chooseTypes = response
                 }).catch(error => {
 
-            })
+            });
+            this.getprojectStage();
         },
         watch: {
             pagination: {
@@ -532,5 +661,12 @@
     .progress_row{
         max-width: 100px;
         text-align:center;
+    }
+
+    td:not(:nth-child(1)), table.v-table tbody td:not(:nth-child(1)),
+    table.v-table thead th:not(:nth-child(1)), table.v-table tbody th:not(:nth-child(1)),
+    table.v-table thead td:first-child, table.v-table tbody td:first-child,
+    table.v-table thead th:first-child, table.v-table tbody th:first-child {
+        padding: 0 10px;
     }
 </style>

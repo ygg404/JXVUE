@@ -10,6 +10,7 @@
             <v-layout>
               <v-flex>
                 <v-card-text class="subheading">项目名称:{{output.projectName}}</v-card-text>
+                <v-card-text class="subheading">项目类型:{{output.projectType}}</v-card-text>
                 <v-card-text class="subheading">
                   <blockquote>作业内容:{{output.projectWorkNote}}</blockquote>
                 </v-card-text>
