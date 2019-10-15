@@ -20,7 +20,7 @@
             <td>{{props.item.projectType}}</td>
             <td>{{props.item.projectAuthorize}}</td>
             <td>{{props.item.projectCharge}}</td>
-            <td style="min-width: 110px;">{{props.item.startDateTime}}</td>
+            <td style="min-width: 120px;">{{props.item.startDateTime}}</td>
             <td>{{props.item.projectStage}}</td>
             <td>{{props.item.projectReceivable}}</td>
             <td>{{props.item.projectActuallyReceipts}}</td>
@@ -35,6 +35,8 @@
 
 <script>
 import store from '@/store.js'
+import moment from 'moment'
+
 export default {
     data: ()=>({
         projects:[],
@@ -170,6 +172,10 @@ export default {
         this.getStageFromApi().then(success=>{}).catch(error=>{})
     },
     mounted(){
+        this.startDate =  moment(new Date(new Date().getFullYear(), new Date().getMonth() -1 , 1)).format('YYYY-MM-DD');
+        this.endDate =  moment(new Date()).format('YYYY-MM-DD');
+        this.chooseDate = [this.startDate ,this.endDate ];
+
         this.pagination.descending = true
         this.pagination.sortBy = 'id'
         this.pagination.rowsPerPage = 25

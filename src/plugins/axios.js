@@ -12,8 +12,8 @@ let config = {
   // baseURL: process.env.baseURL || process.env.apiUrl || ""
   // timeout: 60 * 1000, // Timeout
   // withCredentials: true, // Check cross-site Access-Control
-  baseURL:'http://localhost:8002/jx/api/',
-  // baseURL:'https://web.gdjxch.cn/jx/api/',
+  // baseURL:'http://localhost:8002/jx/api/',
+  baseURL:'https://web.gdjxch.cn/jx/api/',
   timeout:20000,
   headers:{'Content-type' : 'application/json;charset=utf-8'}
 };

@@ -16,7 +16,7 @@
                     <td>{{props.item.projectName}}</td>
                     <td>{{props.item.projectType}}</td>
                     <td>{{props.item.projectAuthorize}}</td>
-                    <td>{{props.item.projectStartTime}}</td>
+                    <td style="min-width: 120px;">{{props.item.projectStartTime}}</td>
                     <td>{{props.item.projectStage}}</td>
                     <v-btn color="blue darken-1" flat @click="editAudited(props.item)" title="查看" class="controllEdit" style="max-height: 25px;"><v-icon small>search</v-icon>查看</v-btn>
                 </template>
@@ -27,6 +27,8 @@
 
 <script>
     import store from '@/store.js'
+    import moment from 'moment'
+
     export default {
         data: ()=>({
             projectNo:'',
@@ -125,6 +127,10 @@
             }
         },
         mounted(){
+            this.startDate =  moment(new Date(new Date().getFullYear(), new Date().getMonth() -1 , 1)).format('YYYY-MM-DD');
+            this.endDate =  moment(new Date()).format('YYYY-MM-DD');
+            this.chooseDate = [this.startDate ,this.endDate ];
+
             this.pagination.descending = true
             this.pagination.sortBy = 'id'
             this.pagination.rowsPerPage = 25

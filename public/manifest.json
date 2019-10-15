@@ -1,6 +1,6 @@
 {
-  "name": "jx_admin",
-  "short_name": "jx_admin",
+  "name": "杰信测绘管理系统",
+  "short_name": "杰信测绘管理系统",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",
