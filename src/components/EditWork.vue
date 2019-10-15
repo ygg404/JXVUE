@@ -17,7 +17,7 @@
                                 <v-card-text class="subheading">业务负责人:{{works.project_projectBusiness}}</v-card-text>
                                 <v-card-text class="subheading">联系人:{{project_plan.project_user}}</v-card-text>
                                 <v-card-text class="subheading">联系电话: {{project_plan.project_phone}}</v-card-text>
-                                <v-card-text class="subheading">项目开工时间:{{project_plan.project_begun_date_time}}</v-card-text>
+                                <v-card-text class="subheading">项目开工时间:{{project_plan.project_begun_date_time.substring(0,10)}}</v-card-text>
                                 <v-card-text class="subheading">执行标准:{{this.note}}</v-card-text>
                             </v-flex>
                         </v-layout>
@@ -217,7 +217,7 @@ export default {
             project_phone:'',
             project_note:'',
             project_begun_date_time: ''
-            
+
         },
          noteRules:[
             v => !!v || "内容不能为空"
@@ -371,7 +371,7 @@ export default {
                 })
             })
         },
-        addWorkData(){          
+        addWorkData(){
             if(this.works.project_disclosureNote.trim() == null || this.works.project_checkSuggestion.trim() == null
             || this.works.project_dataName.trim() == null || this.works.project_briefSummary.trim() == null
             || this.works.project_workLoad.trim() == null){
@@ -423,7 +423,7 @@ export default {
                     this.snackbarText = '当前进度未达90%，如若已完成，请添加进度并把进度值调为90'
                     this.putQuality = false
                     this.snackbar = true
-                    return false 
+                    return false
                 }
                 return new Promise((resolve,reject) =>{
                 axios({
@@ -440,7 +440,7 @@ export default {
                 }).then(success=>{
                     resolve(success.data)
                     this.putFinishTime().then(success=>{}).catch(error=>{})
-                    setTimeout(_=>{ 
+                    setTimeout(_=>{
                        this.$router.go(-1)
                     },1000)
                 })
@@ -605,7 +605,7 @@ export default {
                     headers:{
                         Authorization: "Bearer " + sessionStorage.getItem('token')
                     },
-                    
+
                 }).then(success =>{
                     resolve(success.data)
                     this.briefSummarys = success.data
@@ -662,7 +662,7 @@ export default {
         },
     },
     created(){
-       
+
     },
     mounted(){
         this.getScheuleByNoApi().then(success=>{}).catch(error=>{})

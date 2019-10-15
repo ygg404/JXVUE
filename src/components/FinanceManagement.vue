@@ -8,9 +8,9 @@
                     <el-date-picker v-model="chooseDate" type ="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" class="dateType">
                         </el-date-picker>
                 </v-flex>
-                <v-flex xs2><v-select v-model="chooseStage" :items="stages" item-text="name" item-value="name" placeholder="选择阶段" class="chooseT" @change="chooseStageData"></v-select></v-flex>
-                <v-flex xs3><v-select v-model="chooseType" clearable :items="chooseTypes" item-text="name" item-value="name" placeholder="类型选择" class="chooseT"></v-select></v-flex>    
-                <v-flex xs2><v-text-field v-model="search" append-icon="search" placeholder="关键词搜索" label="search" single-line hide-details></v-text-field></v-flex>    
+                <!--<v-flex xs2><v-select v-model="chooseStage" :items="stages" item-text="name" item-value="name" placeholder="选择阶段" class="chooseT" @change="chooseStageData"></v-select></v-flex>-->
+                <v-flex xs3><v-select v-model="chooseType" clearable :items="chooseTypes" item-text="name" item-value="name" placeholder="类型选择" class="chooseT"></v-select></v-flex>
+                <v-flex xs2><v-text-field v-model="search" append-icon="search" placeholder="关键词搜索" label="search" single-line hide-details></v-text-field></v-flex>
             </v-layout>
       </v-card-title>
     <v-data-table :headers="headers" :items="projects" :loading="loading" :total-items="totalProjects" :pagination.sync="pagination" class="elevation-1" must-sort>
@@ -20,7 +20,7 @@
             <td>{{props.item.projectType}}</td>
             <td>{{props.item.projectAuthorize}}</td>
             <td>{{props.item.projectCharge}}</td>
-            <td>{{props.item.startDateTime}}</td>
+            <td style="min-width: 110px;">{{props.item.startDateTime}}</td>
             <td>{{props.item.projectStage}}</td>
             <td>{{props.item.projectReceivable}}</td>
             <td>{{props.item.projectActuallyReceipts}}</td>
@@ -35,7 +35,7 @@
 
 <script>
 import store from '@/store.js'
-export default {  
+export default {
     data: ()=>({
         projects:[],
         types:[],
@@ -76,7 +76,7 @@ export default {
           }else if(this.chooseDate.length > 0){
               this.startDate = this.chooseDate[0]
               this.endDate = this.chooseDate[1]
-          }   
+          }
           return new Promise((resolve,reject) =>{
                 this.loading = true
                 const{ sortBy,descending,page,rowsPerPage} = this.pagination
@@ -110,7 +110,7 @@ export default {
         },
         editFinance:function(item){
           this.$router.push({name:'editfinance',query:{'p_no':item.projectNo}});
-        },  
+        },
         getTypeFromApi(){
                 return new Promise((resolve,reject) =>{
                     axios({
@@ -145,7 +145,7 @@ export default {
                     .then(success =>{
                     }).catch(error=>{})
                 }).catch(error =>{
-                    
+
                 })
             })
         },
@@ -164,7 +164,7 @@ export default {
             this.totalProjects = success.total
             }).catch(error=>{})
             }
-        
+
     },
     created(){
         this.getStageFromApi().then(success=>{}).catch(error=>{})
@@ -179,7 +179,7 @@ export default {
           this.totalProjects = success.total
         }).catch(error=>{})
         this.getTypeFromApi().then(success=>{}).catch(error=>{})
-        
+
     },
     watch:{
       pagination:{
@@ -190,7 +190,7 @@ export default {
             this.total = success.data
           }).catch(error=>{})
         }
-      },    
+      },
       search:{
             handler(){
                 this.getProjectsFromApi().then(data=>{}).catch(error=>{})
@@ -220,7 +220,7 @@ export default {
   margin-top: 0.5rem
 }
 .chooseT{
-  margin-right: 5rem
+  margin-left: 5px
 }
 </style>
 

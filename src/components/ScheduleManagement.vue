@@ -408,7 +408,7 @@
                             let myDate = new Date();
                             myDate = moment(myDate).format('YYYY-MM-DD')//获取当前时间
                             item.time = this.DateDiff(myDate, item.time);
-                            item.projectBegunDate = moment(new Date(item.projectBegunDate)).format('YYYY-MM-DD')
+                            item.projectBegunDate = item.projectBegunDate == null ? '':moment(new Date(item.projectBegunDate)).format('YYYY-MM-DD')
                             item.cDateTimeYM = item.cDateTime==null?'':moment(new Date(item.cDateTime)).format('YYYY-MM')
                             item.qFinishDateTime = item.qFinishDateTime==null?'':moment(new Date(item.qFinishDateTime)).format('YYYY-MM-DD')
                         });
@@ -667,6 +667,6 @@
     table.v-table thead th:not(:nth-child(1)), table.v-table tbody th:not(:nth-child(1)),
     table.v-table thead td:first-child, table.v-table tbody td:first-child,
     table.v-table thead th:first-child, table.v-table tbody th:first-child {
-        padding: 0 10px;
+        padding: 0 7px;
     }
 </style>

@@ -13,7 +13,7 @@
           <template slot="items" slot-scope="props">
             <td>{{props.item.contractNo}}</td>
             <td>{{props.item.projectName}}</td>
-            <td>{{props.item.projectType}}</td>
+            <!--<td>{{props.item.projectType}}</td>-->
             <td>{{props.item.projectAuthorize}}</td>
             <td>{{props.item.projectStartTime}}</td>
             <td>{{props.item.projectStage}}</td>
@@ -28,7 +28,7 @@
 import store from '@/store.js'
 import moment from 'moment'
 
-export default {  
+export default {
     data: ()=>({
         projects:[],
         types:[],
@@ -47,7 +47,7 @@ export default {
         headers:[
             {text:'合同编号',value:'contractNo'},
             {text:'项目名称',value:'projectName',sortable:false},
-            {text:'项目类型',value:'projectType'},
+            // {text:'项目类型',value:'projectType'},
             {text:'委托单位',value:'projectAuthorize',sortable:false},
             {text:'启动时间',value:'projectStartTime'},
             {text:'项目阶段',value:'projectStage'}
@@ -61,7 +61,7 @@ export default {
           }else if(this.chooseDate.length > 0){
               this.startDate = this.chooseDate[0]
               this.endDate = this.chooseDate[1]
-          }   
+          }
           return new Promise((resolve,reject) =>{
                 this.loading = true
                 const{ sortBy,descending,page,rowsPerPage} = this.pagination
@@ -142,7 +142,7 @@ export default {
             this.total = success.data
           }).catch(error=>{})
         }
-      },    
+      },
       search:{
             handler(){
                 this.getProjectsFromApi().then(data=>{}).catch(error=>{})
@@ -198,6 +198,10 @@ export default {
 
 .mb-2 {
     margin-top: 20px !important;
+}
+
+table.v-table tbody td{
+    height: 32px;
 }
 </style>
 

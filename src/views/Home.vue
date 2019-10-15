@@ -39,8 +39,8 @@
                 </v-card>
             </v-dialog>
 
-      <v-content>
-        <transition name="slide-fade">
+      <v-content >
+        <transition name="slide-fade" >
           <router-view></router-view>
         </transition>
       </v-content>
@@ -48,51 +48,51 @@
       <v-navigation-drawer clipped fixed v-model="drawer" app   style="width: 240px;">
         <v-list>
 
- <v-list-group v-model="projectController.active" prepend-icon="insert_chart_outlined">
-              <v-list-tile slot="activator">
-              <v-list-tile-content>
-                <v-list-tile-title>{{projectController.title}}</v-list-tile-title>
-              </v-list-tile-content>
-              </v-list-tile>
-              <!--项目处理-->
-              <v-list-tile to="project-management" v-if="permissions.includes('all_permission') || permissions.includes('project_stage')">
-                <v-list-tile-action>
-                  <v-icon></v-icon>
-                </v-list-tile-action>
-                <v-list-tile-content>
-                  <v-list-tile-title>{{projectController.submenu[0].name}}</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-              <!--项目进度-->
-              <v-list-tile to="schedule-management" v-if="permissions.includes('all_permission') || permissions.includes('project_schedule')">
-                <v-list-tile-action>
-                  <v-icon></v-icon>
-                </v-list-tile-action>
-                <v-list-tile-content>
-                  <v-list-tile-title>{{projectController.submenu[1].name}}</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-            <!--项目产值-->
-           <v-list-tile to="project-output" v-if="permissions.includes('all_permission') || permissions.includes('start_project')">
-                <v-list-tile-action>
-                  <v-icon></v-icon>
-                </v-list-tile-action>
-                <v-list-tile-content>
-                  <v-list-tile-title>{{projectController.submenu[2].name}}</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
+ <!--<v-list-group v-model="projectController.active" prepend-icon="insert_chart_outlined">-->
+              <!--<v-list-tile slot="activator">-->
+              <!--<v-list-tile-content>-->
+                <!--<v-list-tile-title>{{projectController.title}}</v-list-tile-title>-->
+              <!--</v-list-tile-content>-->
+              <!--</v-list-tile>-->
+              <!--&lt;!&ndash;项目处理&ndash;&gt;-->
+              <!--<v-list-tile to="project-management" v-if="permissions.includes('all_permission') || permissions.includes('project_stage')">-->
+                <!--<v-list-tile-action>-->
+                  <!--<v-icon></v-icon>-->
+                <!--</v-list-tile-action>-->
+                <!--<v-list-tile-content>-->
+                  <!--<v-list-tile-title>{{projectController.submenu[0].name}}</v-list-tile-title>-->
+                <!--</v-list-tile-content>-->
+              <!--</v-list-tile>-->
+              <!--&lt;!&ndash;项目进度&ndash;&gt;-->
+              <!--<v-list-tile to="schedule-management" v-if="permissions.includes('all_permission') || permissions.includes('project_schedule')">-->
+                <!--<v-list-tile-action>-->
+                  <!--<v-icon></v-icon>-->
+                <!--</v-list-tile-action>-->
+                <!--<v-list-tile-content>-->
+                  <!--<v-list-tile-title>{{projectController.submenu[1].name}}</v-list-tile-title>-->
+                <!--</v-list-tile-content>-->
+              <!--</v-list-tile>-->
+            <!--&lt;!&ndash;项目产值&ndash;&gt;-->
+           <!--<v-list-tile to="project-output" v-if="permissions.includes('all_permission') || permissions.includes('start_project')">-->
+                <!--<v-list-tile-action>-->
+                  <!--<v-icon></v-icon>-->
+                <!--</v-list-tile-action>-->
+                <!--<v-list-tile-content>-->
+                  <!--<v-list-tile-title>{{projectController.submenu[2].name}}</v-list-tile-title>-->
+                <!--</v-list-tile-content>-->
+              <!--</v-list-tile>-->
 
+     <!--&lt;!&ndash;项目回收站&ndash;&gt;-->
+          <!--<v-list-tile to="recycle-management" v-if="permissions.includes('all_permission') || permissions.includes('get_recycler')">-->
+            <!--<v-list-tile-action>-->
+              <!--<v-icon></v-icon>-->
+            <!--</v-list-tile-action>-->
 
-          <v-list-tile to="recycle-management" v-if="permissions.includes('all_permission') || permissions.includes('get_recycler')">
-            <v-list-tile-action>
-              <v-icon></v-icon>
-            </v-list-tile-action>
-
-            <v-list-tile-content>
-              <v-list-tile-title>{{projectController.submenu[3].name}}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-          </v-list-group>
+            <!--<v-list-tile-content>-->
+              <!--<v-list-tile-title>{{projectController.submenu[3].name}}</v-list-tile-title>-->
+            <!--</v-list-tile-content>-->
+          <!--</v-list-tile>-->
+          <!--</v-list-group>-->
 
           <v-list-group v-model="projectManageMenu.active" prepend-icon="account_balance">
               <v-list-tile slot="activator">
@@ -172,6 +172,37 @@
                   <v-list-tile-title>{{projectManageMenu.submenu[7].name}}</v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>
+
+              <!--项目进度-->
+              <v-list-tile to="schedule-management" v-if="permissions.includes('all_permission') || permissions.includes('project_schedule')">
+                  <v-list-tile-action>
+                      <v-icon></v-icon>
+                  </v-list-tile-action>
+                  <v-list-tile-content>
+                      <v-list-tile-title>{{projectManageMenu.submenu[8].name}}</v-list-tile-title>
+                  </v-list-tile-content>
+              </v-list-tile>
+              <!--项目产值-->
+              <v-list-tile to="project-output" v-if="permissions.includes('all_permission') || permissions.includes('start_project')">
+                  <v-list-tile-action>
+                      <v-icon></v-icon>
+                  </v-list-tile-action>
+                  <v-list-tile-content>
+                      <v-list-tile-title>{{projectManageMenu.submenu[9].name}}</v-list-tile-title>
+                  </v-list-tile-content>
+              </v-list-tile>
+
+              <!--项目回收站-->
+              <v-list-tile to="recycle-management" v-if="permissions.includes('all_permission') || permissions.includes('get_recycler')">
+                  <v-list-tile-action>
+                      <v-icon></v-icon>
+                  </v-list-tile-action>
+
+                  <v-list-tile-content>
+                      <v-list-tile-title>{{projectManageMenu.submenu[10].name}}</v-list-tile-title>
+                  </v-list-tile-content>
+              </v-list-tile>
+
               <!--项目处理-->
               <!-- <v-list-tile to="project-management" v-if="permissions.includes('all_permission') || permissions.includes('project_stage')">
                 <v-list-tile-action>
@@ -375,7 +406,7 @@
 import store from "@/store.js"
 export default {
   data: () => ({
-    drawer: true,
+      drawer: true,
     eidtUserPass:false,
     useraccount: localStorage.getItem('userAccount'),
     oldPass:'',
@@ -396,7 +427,7 @@ export default {
     },
     projectManageMenu:{
       active:false,
-      title: '项目流程',
+      title: '项目管理',
       submenu:[
         {name:'合同管理'},
         {name:'项目立项'},
@@ -406,9 +437,9 @@ export default {
         {name:'产值核算'},
         {name:'项目审定'},
         {name:'已审定'},
-        {name:'项目处理'},
-        {name:'项目进度'},
-        {name:'项目产值'}
+         {name:'项目状态'},
+         {name:'项目产值'},
+         {name:'项目回收站'}
       ]
     },
     contractManageMenu:{
@@ -552,6 +583,6 @@ export default {
 }
 
 table.v-table tbody td{
-    height: 35px;
+    height: 32px;
 }
 </style>

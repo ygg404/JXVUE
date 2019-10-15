@@ -39,9 +39,9 @@
                                 <td colspan="5"><b>{{props.item.gName}}</b></td>
                             </tr>
                             <tr v-for="pr in props.item.planRateList" :key="pr.id">
-                                <td>{{pr.projectName}}</td>
-                                <td>{{pr.startDateTime.replace(' 00:00:00' , '')}}</td>
-                                <td>{{pr.finishDateTime.replace(' 00:00:00' , '')}}</td>
+                                <td style="max-width: 280px;">{{pr.projectName}}</td>
+                                <td style="min-width: 120px;">{{pr.startDateTime.replace(' 00:00:00' , '')}}</td>
+                                <td style="min-width: 120px;">{{pr.finishDateTime.replace(' 00:00:00' , '')}}</td>
                                 <td>{{pr.outputNum.toFixed(2)}}</td>
                             </tr>
                             <tr>
@@ -67,8 +67,8 @@
                             </tr>
                             <tr v-for="pr in props.item.planRateList" :key="pr.id">
                                 <td>{{pr.projectName}}</td>
-                                <td>{{pr.startDateTime.replace(' 00:00:00' , '')}}</td>
-                                <td>{{pr.finishDateTime}}</td>
+                                <td style="min-width: 120px;">{{pr.startDateTime.replace(' 00:00:00' , '')}}</td>
+                                <td style="min-width: 120px;">{{pr.finishDateTime}}</td>
                                 <td>{{pr.outputNum.toFixed(2)}}</td>
                             </tr>
                         </template>
@@ -292,5 +292,9 @@
 
     .mb-2 {
         margin-top: 20px !important;
+    }
+
+    table.v-table tbody td{
+        height: 32px;
     }
 </style>

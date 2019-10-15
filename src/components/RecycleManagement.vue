@@ -18,8 +18,8 @@
                     <td>{{props.item.projectAuthorize}}</td>
                     <td>{{props.item.projectSetUp}}</td>
                     <td>{{props.item.projectUser}}</td>
-                    <td>{{props.item.projectStartTime}}</td>
-                    <td>{{props.item.projectStage}}</td>
+                    <td style="min-width: 120px;">{{props.item.projectStartTime}}</td>
+                    <td style="min-width: 100px;">{{props.item.projectStage}}</td>
                     <v-btn color="error" flat @click="deleteItem(props.item)" title="删除" class="controllSelect"><v-icon color="error" small>delete</v-icon>彻底删除</v-btn>
                     <v-btn color="blue darken-1" flat @click="backItem(props.item)" title="恢复" class="controllSelect"><v-icon color="info" small>restore</v-icon>恢复</v-btn>
                 </template>
@@ -108,7 +108,7 @@
                         reject(error.response)
                     })
                 })
-            }, 
+            },
             deleteItem(item){
                 if(!this.permissions.includes('all_permission') || this.permissions.includes('delete_project')){
                             this.snackbarColor = 'error'
@@ -135,7 +135,7 @@
                     }).catch(error=>{})
                     })
                 }
-        }, 
+        },
         backItem(item){
         if(!this.permissions.includes('all_permission') || this.permissions.includes('back_project')){
                     this.snackbarColor = 'error'
@@ -149,7 +149,7 @@
             method: 'POST',
             headers: {
                 Authorization: 'Bearer ' +sessionStorage.getItem('token')
-            },           
+            },
             params:{
                 projectNo:item.projectNo,
                 stageId:1
@@ -161,9 +161,9 @@
             this.getProjectsFromApi()
             .then(success =>{
               this.projects = success.data
-              
+
             }).catch(error =>{
-              
+
             })
             })
         }
@@ -223,6 +223,10 @@
     .searchBtn{
         margin-left: 20px;
         margin-top: 12px
+    }
+
+    table.v-table tbody td{
+        height: 32px;
     }
 </style>
 

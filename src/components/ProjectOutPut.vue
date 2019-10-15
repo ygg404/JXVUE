@@ -13,8 +13,8 @@
                 <template slot="items" slot-scope="props">
                     <td>{{props.item.contractNo}}</td>
                     <td>{{props.item.projectName}}</td>
-                    <td>{{props.item.projectStartTime}}</td>
-                    <td>{{props.item.workName}}</td>
+                    <td style="min-width: 110px;">{{props.item.projectStartTime}}</td>
+                    <td style="min-width: 110px;">{{props.item.workName}}</td>
                     <td>{{props.item.projectOutPut}}</td>
                     <td>{{props.item.projectActuallyOutput}}</td>
                 </template>
@@ -122,6 +122,10 @@
             }
         },
         mounted(){
+            this.startDate =  moment(new Date(new Date().getFullYear(), new Date().getMonth() -1 , 1)).format('YYYY-MM-DD');
+            this.endDate =  moment(new Date()).format('YYYY-MM-DD');
+            this.chooseDate = [this.startDate ,this.endDate ];
+
             this.pagination.descending = true
             this.pagination.sortBy = 'id'
             this.pagination.rowsPerPage = 25

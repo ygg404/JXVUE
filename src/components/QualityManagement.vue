@@ -33,7 +33,7 @@
                     <td>{{props.item.projectName}}</td>
                     <td>{{props.item.projectType}}</td>
                     <td>{{props.item.projectAuthorize}}</td>
-                    <td>{{props.item.projectStartTime}}</td>
+                    <td style="min-width: 110px;">{{props.item.projectStartTime}}</td>
                     <td>{{props.item.projectStage}}</td>
                     <v-btn color="blue darken-1" flat @click="editQuality(props.item)" title="修改" class="controllEdit"><v-icon small> edit</v-icon>编辑</v-btn>
                     <v-btn v-if="props.item.backWorkList" color="blue darken-1" flat @click="seleBack(props.item)" title="查看返修" class="controllAdd"><v-icon small>poll</v-icon>返修记录</v-btn>
@@ -228,6 +228,10 @@
 
     .mb-2 {
         margin-top: 20px !important;
+    }
+
+    table.v-table tbody td{
+        height: 32px;
     }
 </style>
 

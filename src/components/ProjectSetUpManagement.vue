@@ -101,10 +101,10 @@
                     <td>{{props.item.projectName}}</td>
                     <!--<td>{{props.item.projectType}}</td>-->
                     <td>{{props.item.projectAuthorize}}</td>
-                    <td>{{props.item.projectStartTime}}</td>
+                    <td >{{props.item.projectStartTime}}</td>
                     <td>{{props.item.projectStage}}</td>
-                    <v-btn color="blue darken-1" flat @click="editProjectDialogData(props.item)" title="查看" class="controllEdit"><v-icon small> search</v-icon>查看</v-btn>
-                    <v-btn color="error" flat @click="deleteItem(props.item)" title="删除" class="controllDelete" ><v-icon color="error" small>delete</v-icon>删除</v-btn>
+                    <v-btn color="blue darken-1" flat @click="editProjectDialogData(props.item)" title="查看" class="controllEdit" style="max-height: 25px;"><v-icon small> search</v-icon>查看</v-btn>
+                    <v-btn color="error" flat @click="deleteItem(props.item)" title="删除" class="controllDelete" style="max-height: 25px;"><v-icon color="error" small>delete</v-icon>删除</v-btn>
                 </template>
             </v-data-table>
             <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="snackbarTimeout" top>
@@ -656,6 +656,10 @@
 
     .mb-2 {
         margin-top: 20px !important;
+    }
+
+    table.v-table tbody td{
+        height: 32px;
     }
 </style>
 

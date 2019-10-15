@@ -18,7 +18,7 @@
                     <td>{{props.item.projectAuthorize}}</td>
                     <td>{{props.item.projectStartTime}}</td>
                     <td>{{props.item.projectStage}}</td>
-                    <v-btn color="blue darken-1" flat @click="editAudited(props.item)" title="查看" class="controllEdit"><v-icon small>search</v-icon>查看</v-btn>
+                    <v-btn color="blue darken-1" flat @click="editAudited(props.item)" title="查看" class="controllEdit" style="max-height: 25px;"><v-icon small>search</v-icon>查看</v-btn>
                 </template>
             </v-data-table>
         </v-card>

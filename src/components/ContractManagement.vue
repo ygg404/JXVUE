@@ -16,10 +16,14 @@
             <v-data-table :headers="headers" :items="contracts" :loading="loading" :total-items="totalContracts" :pagination.sync="pagination" class="elevation-1" must-sort>
                 <template slot="items" slot-scope="props">
                     <td>{{props.item.contractNo}}</td>
-                    <td>{{props.item.contractName}}</td>
+                    <el-tooltip  :content="props.item.contractName" placement="top">
+                        <td class="project_name_row">
+                            {{props.item.contractName}}</td>
+                    </el-tooltip>
+                    <!--<td style="max-width: 300px;">{{props.item.contractName}}</td>-->
                     <td>{{props.item.contractAuthorize}}</td>
-                    <td style="min-width: 80px;">{{props.item.typeId == 0 ? "合同委托" : "一般合同"}}</td>
-                    <td style="min-width: 100px;">{{props.item.contractAddTime}}</td>
+                    <td style="min-width: 100px;">{{props.item.typeId == 0 ? "合同委托" : "一般合同"}}</td>
+                    <td style="min-width: 120px;">{{props.item.contractAddTime}}</td>
                     <v-btn color="blue darken-1" flat @click="editContractDialogData(props.item)" title="修改" class="controllEdit" style="height: 22px;"><v-icon small> edit</v-icon>编辑</v-btn>
                     <v-btn color="error" flat @click="deleteItem(props.item)" title="删除" class="controllDelete" style="height: 22px;"><v-icon color="error" small>delete</v-icon>删除</v-btn>
                     <v-btn v-if="props.item.fileName" color="blue darken-1" flat @click="downloadFile(props.item)" title="下载附件" style="height: 22px;" ><v-icon color="success" small>cloud_download</v-icon>下载</v-btn>
@@ -89,7 +93,8 @@
                     <v-container>
                         <v-layout wrap>
                             <v-flex md12>
-                                <v-text-field v-model="contract.contractName" label="合同名称:" :rules="noteRules" prepend-icon="calendar_today"></v-text-field>
+                                <v-text-field v-model="contract.contractName" label="合同名称:" :rules="noteRules" prepend-icon="calendar_today">
+                                </v-text-field>
                                 <v-text-field v-model="contract.contractNo" label="合同编号:" :rules="noteRules" prepend-icon="book" disabled></v-text-field>
                                 <v-select v-model="contract.projectType" label="项目类型:" :rules="noteRules" :items="types" item-text="name" item-value="name" prepend-icon="storage" multiple></v-select>
                                 <v-text-field v-model="contract.contractMoney" label="合同金额:" :rules="noteRules" prepend-icon="monetization_on" type="number"></v-text-field>
@@ -416,9 +421,13 @@
             },
             editContractDialogData(item){
                 this.contract.projectType = [];
+                let typeNameList = [];
+                for(let typeobj of this.types){
+                    typeNameList.push(typeobj.name);
+                }
                 let typelist = item.projectType.split(',');
                 for(let type of typelist){
-                    if(type != '' && type != null)this.contract.projectType.push(type);
+                    if(type != '' && type != null && typeNameList.indexOf(type) != -1)this.contract.projectType.push(type);
                 }
 
                 this.contract.contractNo = item.contractNo
@@ -586,6 +595,17 @@
     }
     .chooseT{
         margin-right: 5rem
+    }
+
+    .project_name_row{
+        max-width:300px;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+    }
+
+    table.v-table tbody td{
+        height: 32px;
     }
 </style>
 

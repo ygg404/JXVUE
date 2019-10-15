@@ -59,8 +59,8 @@
                     <td>{{props.item.projectCharge}}</td>
                     <td>{{props.item.workStage == 0 ? '开始' : '暂停'}}</td>
                     <td>{{props.item.projectAuthorize}}</td>
-                    <td>{{props.item.projectStartTime}}</td>
-                    <td>{{props.item.projectStage}}</td>
+                    <td style="min-width: 120px;">{{props.item.projectStartTime}}</td>
+                    <td style="min-width: 100px;">{{props.item.projectStage}}</td>
                     <td v-if="props.item.workStage == 0" style="min-width:140px;">
                         <v-icon  v-if="props.item.charge" color="blue darken-1" flat @click="editPlan(props.item)" title="修改"> edit</v-icon>
                         <v-icon  v-if="props.item.charge" color="blue darken-1" flat @click="print(props.item)" title="打印">print</v-icon>

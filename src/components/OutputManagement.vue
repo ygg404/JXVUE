@@ -16,9 +16,9 @@
                     <td>{{props.item.projectName}}</td>
                     <!--<td >{{props.item.projectType}}</td>-->
                     <td>{{props.item.projectAuthorize}}</td>
-                    <td>{{props.item.projectStartTime}}</td>
+                    <td style="min-width: 120px;">{{props.item.projectStartTime}}</td>
                     <td>{{props.item.projectStage}}</td>
-                    <v-btn color="blue darken-1" flat @click="editOutPut(props.item)" title="修改" class="controllEdit"><v-icon small> edit</v-icon>编辑</v-btn>
+                    <v-btn color="blue darken-1" flat @click="editOutPut(props.item)" title="修改" class="controllEdit" style="max-height: 25px;"><v-icon small> edit</v-icon>编辑</v-btn>
                 </template>
             </v-data-table>
         </v-card>
