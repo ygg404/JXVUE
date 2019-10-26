@@ -13,7 +13,7 @@
                     <v-flex xs3><v-text-field v-model="search" append-icon="search" placeholder="关键词搜索" label="search" single-line hide-details></v-text-field></v-flex>
                 </v-layout>
             </v-card-title>
-            <v-data-table :headers="headers" :items="contracts" :loading="loading" :total-items="totalContracts" :pagination.sync="pagination" class="elevation-1" must-sort>
+            <v-data-table :headers="headers" :items="contracts" :loading="loading" :total-items="totalContracts" :pagination.sync="pagination" class="elevation-1" must-sort >
                 <template slot="items" slot-scope="props">
                     <td>{{props.item.contractNo}}</td>
                     <el-tooltip  :content="props.item.contractName" placement="top">
