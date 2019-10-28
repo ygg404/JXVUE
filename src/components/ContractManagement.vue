@@ -13,22 +13,52 @@
                     <v-flex xs3><v-text-field v-model="search" append-icon="search" placeholder="关键词搜索" label="search" single-line hide-details></v-text-field></v-flex>
                 </v-layout>
             </v-card-title>
-            <v-data-table :headers="headers" :items="contracts" :loading="loading" :total-items="totalContracts" :pagination.sync="pagination" class="elevation-1" must-sort >
-                <template slot="items" slot-scope="props">
-                    <td>{{props.item.contractNo}}</td>
-                    <el-tooltip  :content="props.item.contractName" placement="top">
-                        <td class="project_name_row">
-                            {{props.item.contractName}}</td>
-                    </el-tooltip>
-                    <!--<td style="max-width: 300px;">{{props.item.contractName}}</td>-->
-                    <td>{{props.item.contractAuthorize}}</td>
-                    <td style="min-width: 100px;">{{props.item.typeId == 0 ? "合同委托" : "一般合同"}}</td>
-                    <td style="min-width: 120px;">{{props.item.contractAddTime}}</td>
-                    <v-btn color="blue darken-1" flat @click="editContractDialogData(props.item)" title="修改" class="controllEdit" style="height: 22px;"><v-icon small> edit</v-icon>编辑</v-btn>
-                    <v-btn color="error" flat @click="deleteItem(props.item)" title="删除" class="controllDelete" style="height: 22px;"><v-icon color="error" small>delete</v-icon>删除</v-btn>
-                    <v-btn v-if="props.item.fileName" color="blue darken-1" flat @click="downloadFile(props.item)" title="下载附件" style="height: 22px;" ><v-icon color="success" small>cloud_download</v-icon>下载</v-btn>
-                </template>
-            </v-data-table>
+
+
+            <el-table :data="contracts" border v-loading="loading" style="width: 100%" class="elTable" @sort-change="changeSort">
+                <el-table-column type="expand" >
+                    <template slot-scope="props">
+                        <el-table  :data="props.row.planRateList" style="width: 100%;" :row-class-name="getTableclass" border>
+                            <el-table-column label="项目名称" prop="projectName"></el-table-column>
+                            <el-table-column label="项目启动时间" prop="startDateTime"></el-table-column>
+                            <el-table-column label="预算产值" prop="project_output"></el-table-column>
+                            <el-table-column label="实际产值" prop="actuallyOutput"></el-table-column>
+                            <el-table-column prop="project_rate" label="进度" >
+                                <template slot-scope="scope">
+                                    <el-progress :text-inside="true"  :stroke-width="26" :percentage="scope.row.project_rate" ></el-progress>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="contractNo" header-align="center" align="center" width="120" label="合同编号" sortable :sort-orders="['descending','ascending']"></el-table-column>
+                <el-table-column prop="contractName" header-align="center" align="left" label="合同名称" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="contractAuthorize" header-align="center" align="center" label="委托单位" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="typeId" header-align="center" align="center" width="100" label="合同类型">
+                    <template slot-scope="scope">
+                        <el-tag v-if="scope.row.typeId === 0" size="small" type="danger">合同委托</el-tag>
+                        <el-tag v-else-if="scope.row.typeId === 1" size="small" type="success">一般合同</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="contractAddTime" header-align="center" align="center" width="120" label="签订时间"></el-table-column>
+                <el-table-column header-align="center" align="left" width="300" label="操作" style="z-index: -1">
+                    <template slot-scope="scope">
+                        <el-button type="warning" size="mini" @click="addProject(scope.row)">添加项目</el-button>
+                        <el-button type="primary" size="mini" @click="editContractDialogData(scope.row)">修改</el-button>
+                        <el-button type="danger" size="mini" @click="deleteItem(scope.row)">删除</el-button>
+                        <el-button v-if="scope.row.fileName" type="success" size="mini" @click="downloadFile(scope.row)">下载</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <el-pagination style="margin-top: 7px;width: auto;text-align: right;"
+                    @size-change="sizeChangeHandle"
+                    @current-change="currentChangeHandle"
+                    :current-page="pagination.page"
+                    :page-sizes="[25, 50, 100]"
+                    :page-size="pagination.rowsPerPage"
+                    :total="totalContracts"
+                    layout="total, sizes, prev, pager, next, jumper">
+            </el-pagination>
         </v-card>
 
         <v-dialog max-width="500px" v-model="addContractDialog" persistent>
@@ -84,6 +114,46 @@
             </v-card>
         </v-dialog>
 
+        <v-dialog max-width="500px" v-model="addProjectDialog" persistent>
+            <v-card>
+                <v-card-title><span class="title">添加项目</span>
+                    <v-layout justify-end>
+                        <v-flex xs4 >
+                            <v-select label="生产负责人" v-model="project.project_produce" :items="projectCharges" item-text="userName" item-value="userName"></v-select>
+                        </v-flex>
+                    </v-layout>
+                </v-card-title>
+                <v-card-text>
+                    <v-container>
+                        <v-layout wrap>
+                            <v-flex md12>
+                                <v-text-field v-model="project.project_no" label="项目编号" prepend-icon="list_alt" disabled></v-text-field>
+                                <v-text-field v-model="project.contractName" label="选择合同:" item-text="contractName" item-value="contractNo" prepend-icon="list_alt" disabled></v-text-field>
+                                <v-text-field v-model="project.project_name" label="项目名称:" prepend-icon="calendar_today" ></v-text-field>
+                                <v-text-field v-model="project.project_type" label="项目类型:" prepend-icon="book" disabled></v-text-field>
+                                <v-text-field v-model="project.project_authorize" label="委托单位:" prepend-icon="nature" disabled></v-text-field>
+                                <v-text-field v-model="project.user_name" label="联系人姓名:" prepend-icon="how_to_reg" disabled></v-text-field>
+                                <v-text-field v-model="project.user_phone" label="联系电话:" prepend-icon="phone" type="number" disabled></v-text-field>
+                                <v-text-field v-model="project.project_note" label="委托要求:" prepend-icon="live_help" disabled></v-text-field>
+                                <v-text-field v-model="project.project_charge" label="业务负责人:"  prepend-icon="account_box" disabled></v-text-field>
+                                <v-menu v-model="addProjectDateMenu" :close-on-content-click="false" :nudge-right="40" lazy transition="scale-transition" offset-y full-width min-width="290px">
+                                    <template v-slot:activator="{ on }">
+                                        <v-text-field v-model="project_start_date" label="项目启动时间:" prepend-icon="event" readonly  v-on="on"></v-text-field>
+                                    </template>
+                                    <v-date-picker v-model="project_start_date" @input="addProjectDateMenu = false"></v-date-picker>
+                                </v-menu>
+                            </v-flex>
+                        </v-layout>
+                    </v-container>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" flat @click="colseaddProjectDialog">取消</v-btn>
+                    <!--<v-btn color="success" @click="putStage">提交至项目安排</v-btn>-->
+                    <v-btn color="info" @click="addProjectToApi">新增</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
 
         <v-dialog max-width="500px" v-model="editDialog" persistent>
             <v-card>
@@ -160,6 +230,7 @@
             dateEditMenu:false,
             totalContracts : 0,
             addDateMenu: false,
+            addProjectDateMenu:false,
             startDate:'',
             chooseDate:false,
             pagination:{},
@@ -202,9 +273,77 @@
                 'Authorization': 'Bearer ' + sessionStorage.getItem("token")
             },
             upContractUrl: BaseConfig.upContractUrl,  //合同上传路径
-            downContractUrl: BaseConfig.downContractUrl  //合同下载路径接口
+            downContractUrl: BaseConfig.downContractUrl,  //合同下载路径接口,
+            pageIndex: 1,
+            pageSize: 25,
+            totalPage: 0,
+
+            addProjectDialog:false,
+            project:{
+                contractNo:'',
+                project_no:'',
+                project_name:'',
+                project_num:'',
+                project_type:'',
+                project_money:'',
+                project_authorize:'',
+                user_name:'',
+                user_phone:'',
+                project_note:'',
+                project_charge:'',
+                project_produce:''
+            },
+            project_start_date:''
         }),
         methods:{
+            colseaddProjectDialog(){
+                this.stageId = 1
+                this.project.project_no = ''
+                this.project.project_name = ''
+                this.project.project_num = ''
+                this.project.project_type = ''
+                this.project.project_money = ''
+                this.project.project_authorize = ''
+                this.project.user_name = ''
+                this.project.user_phone = ''
+                this.project.project_note = ''
+                this.project.project_charge = ''
+                this.project_start_date = ''
+                this.addProjectDialog = false
+            },
+            coloseeditProjectDialog(){
+                this.stageId = 1
+                this.project.project_no = ''
+                this.project.project_name = ''
+                this.project.project_num = ''
+                this.project.project_type = ''
+                this.project.project_money = ''
+                this.project.project_authorize = ''
+                this.project.user_name = ''
+                this.project.user_phone = ''
+                this.project.project_note = ''
+                this.project.project_charge = ''
+                this.project_start_date = ''
+                this.editProjectDialog = false
+            },
+            addProject(item){
+                // this.getContractName().then(response=>{
+                //
+                // }).catch(error=>{})
+                this.project.project_no = item.contractNo
+                this.project.contractName = item.contractName
+                this.project.project_name = item.contractName
+                this.project.project_type = item.projectType
+                this.project.project_money = item.contractMoney
+                this.project.project_authorize = item.contractAuthorize
+                this.project.user_name = item.contractUserName
+                this.project.user_phone = item.contractUserPhone
+                this.project.project_note = item.contractNote
+                this.project.project_charge = item.contractBusiness
+                this.project_start_date = ''
+
+                this.addProjectDialog = true
+            },
             getPhone(){
                 if(this.contract.contractUserPhone != ''){
                     if (!(/^1[34578]\d{9}$/.test(this.contract.contractUserPhone))) {
@@ -545,11 +684,98 @@
                     })
                 })
             },
+            // 每页数
+            sizeChangeHandle (val) {
+                this.pagination.rowsPerPage = val
+                this.pagination.page = 1
+                this.getContractFromApi()
+            },
+            // 当前页
+            currentChangeHandle (val) {
+                this.pagination.page = val
+                this.getContractFromApi()
+            },
+            // 排序字段改变
+            changeSort (val) {
+                console.log(val)
+                switch (val.order) {
+                    case 'ascending':
+                        this.pagination.descending = false
+                        break
+                    case 'descending':
+                        this.pagination.descending = true
+                        break
+                }
+                this.pagination.sortBy = 'id'
+                this.getContractFromApi()
+            },
+            putStage(){
+                this.isPutToPlan = true,
+                    this.stageId = 2,
+                    this.addProjectToApi().then(success =>{}).catch(error =>{})
+            },
+            addProjectToApi(){
+                return new Promise((resolve,reject) =>{
+                    axios({
+                        method:'POST',
+                        url:'project/' + this.userId + '/',
+                        headers:{
+                            Authorization: "Bearer " +sessionStorage.getItem('token')
+                        },
+                        data:{
+                            contractNo:this.project.contractNo,
+                            projectName: this.project.project_name,
+                            projectNum: this.project.project_num,
+                            projectMoney: this.project.project_money,
+                            projectAuthorize: this.project.project_authorize,
+                            userName: this.project.user_name,
+                            userPhone: this.project.user_phone,
+                            projectNote: this.project.project_note,
+                            projectCharge: this.project.project_charge,
+                            projectStartDateTime: this.project_start_date,
+                            projectType: this.project.project_type,
+                            projectStageId: this.stageId,
+                            projectProduce:this.project.project_produce
+                        }
+                    }).then(response =>{
+                        this.projectNo = response.data
+                        this.getContract().then(success=>{
+                            this.getProjectsFromApi().then(success =>{}).catch(error =>{})
+                        }).catch()
+
+                        if(this.isPutToPlan){
+                            this.putToPlan().then(success=>{}).catch(error=>{})
+                        }
+                        this.stageId = 1
+                        this.project.project_no = ''
+                        this.project.project_name = ''
+                        this.project.project_num = ''
+                        this.project.project_type = ''
+                        this.project.project_money = ''
+                        this.project.project_authorize = ''
+                        this.project.user_name = ''
+                        this.project.user_phone = ''
+                        this.project.project_note = ''
+                        this.project.project_charge = ''
+                        this.stageId = 1
+
+                        this.addProjectDialog = false,
+                            this.snackbar = true,
+                            this.snackbarColor = 'success',
+                            this.snackbarText = '添加成功'
+                    }).catch(error =>{
+                        this.snackbar = false,
+                            this.snackbarColor = 'error',
+                            this.snackbarText = error.response.data.message
+                    })
+                })
+            },
         },
         mounted(){
             this.pagination.descending = true
             this.pagination.sortBy = 'id'
             this.pagination.rowsPerPage = 25
+            this.pagination.page = 1
             this.getContractFromApi()
                 .then(success =>{
 
@@ -606,6 +832,14 @@
 
     table.v-table tbody td{
         height: 32px;
+    }
+
+    .elTable th{
+        padding: 5px 0!important;
+    }
+
+    .elTable td{
+        padding: 3px 0!important;
     }
 </style>
 
