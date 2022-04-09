@@ -11,7 +11,7 @@
     "core-js": "^2.6.5",
     "el-cascader-multi": "^1.1.8",
     "element-ui": "^2.8.2",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "register-service-worker": "^1.6.2",
     "vue": "^2.6.6",
     "vue-pdf": "^4.0.7",
